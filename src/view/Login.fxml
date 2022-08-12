@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="295.0" prefWidth="467.0" style="-fx-background-color: slategrey; -fx-background-radius: 20; -fx-border-color: gray;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
+    <children>
+        <AnchorPane layoutX="5.0" layoutY="55.0" prefHeight="235.0" prefWidth="467.0">
+            <children>
+                <TextField fx:id="loginEntryBox" layoutX="158.0" layoutY="34.0" promptText="Username" />
+                <PasswordField fx:id="passwordEntryBox" layoutX="158.0" layoutY="76.0" promptText="Password" style="-fx-border-color: silver;" />
+                <Button fx:id="submitButton" layoutX="194.0" layoutY="118.0" mnemonicParsing="false" onAction="#submitButtonHandler" text="Registration" />
+                <Label fx:id="utcLabel" alignment="TOP_CENTER" layoutX="14.0" layoutY="172.0" textAlignment="CENTER" textFill="WHITE">
+               <font>
+                  <Font name="Times New Roman" size="18.0" />
+               </font></Label>
+            </children>
+        </AnchorPane>
+        <Label fx:id="titleLabel" alignment="TOP_CENTER" layoutX="62.0" layoutY="14.0" text="Appointment Scheduler" textAlignment="CENTER" textFill="WHITE">
+            <font>
+                <Font name="Times New Roman" size="36.0" />
+            </font>
+        </Label>
+    </children>
+    <effect>
+        <Blend />
+    </effect>
+</AnchorPane>

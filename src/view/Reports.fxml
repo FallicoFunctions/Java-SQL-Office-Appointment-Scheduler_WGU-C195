@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="610.0" prefWidth="845.0" style="-fx-background-color: slategrey;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ReportsScreenController">
+    <children>
+        <TabPane layoutX="27.0" layoutY="45.0" prefHeight="515.0" prefWidth="808.0" tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <Tab text="Appointment Types By Month">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <TableView fx:id="typesByMonthDisplay" layoutX="-1.0" layoutY="-2.0" prefHeight="435.0" prefWidth="583.0">
+                                    <columns>
+                                        <TableColumn fx:id="colTypeMonth" prefWidth="116.79993057250977" text="Month" />
+                                        <TableColumn fx:id="colFirstTimePatient" minWidth="-Infinity" prefWidth="115.0" text="First-time Patient" />
+                                        <TableColumn fx:id="colGeneralCheckup" minWidth="-Infinity" prefWidth="115.0" text="General Checkup" />
+                                        <TableColumn fx:id="colBloodWorkVisit" minWidth="-Infinity" prefWidth="115.0" text="Blood Work Visit" />
+                                        <TableColumn fx:id="colPsychiatricVisit" minWidth="-Infinity" prefWidth="115.0" text="Psychiatric Visit" />
+                                    </columns>
+                                </TableView>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab text="Contact Schedule">
+                    <content>
+                        <AnchorPane prefHeight="466.0" prefWidth="808.0">
+                            <children>
+                                <TableView fx:id="contactScheduleDisplay" layoutX="-2.0" layoutY="2.0" prefHeight="429.0" prefWidth="816.0">
+                                    <columns>
+                                        <TableColumn fx:id="contactColumnID" prefWidth="116" text="Appt ID" />
+                                        <TableColumn fx:id="contactColumnTitle" prefWidth="116" text="Title" />
+                                        <TableColumn fx:id="contactColumnType" prefWidth="116" text="Type" />
+                                        <TableColumn fx:id="contactColumnDescription" prefWidth="116" text="Description" />
+                                        <TableColumn fx:id="contactColumnStartTime" prefWidth="116" text="Start" />
+                                        <TableColumn fx:id="contactColumnEndTime" prefWidth="116" text="End" />
+                                        <TableColumn fx:id="contactColumnCustID" prefWidth="116" text="Customer ID" />
+                                    </columns>
+                                </TableView>
+                                <ComboBox fx:id="contactComboBox" layoutX="320.0" layoutY="440.0" onMouseClicked="#contactComboBoxHandler" prefWidth="150.0" promptText="Select Contact" />
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab text="Customers by Country">
+                    <content>
+                        <AnchorPane prefHeight="181.0" prefWidth="201.0">
+                            <children>
+                                <TableView fx:id="customerCountryTable" layoutY="1.0" prefHeight="403.0" prefWidth="698.0" style="-fx-border-color: black; -fx-border-radius: 5;">
+                                    <columns>
+                                        <TableColumn fx:id="columnID" prefWidth="40.0" text="ID" />
+                                        <TableColumn fx:id="columnName" prefWidth="147.0" text="Customer Name" />
+                                        <TableColumn fx:id="columnAddress" prefWidth="158.0" text="Address" />
+                                        <TableColumn fx:id="columnPhone" prefWidth="123.0" text="Phone" />
+                                        <TableColumn fx:id="columnPostalCode" prefWidth="92.0" text="Postal Code" />
+                                        <TableColumn fx:id="columnDivision" prefWidth="136.0" text="Division" />
+                                    </columns>
+                                </TableView>
+                        <ComboBox fx:id="countryComboBox" layoutX="322.0" layoutY="447.0" onMouseClicked="#countryComboBoxHandler" prefWidth="150.0" promptText="Select Country" />
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+        <Label layoutX="383.0" text="Report Screen" textFill="WHITE">
+            <font>
+                <Font name="Times New Roman" size="36.0" />
+            </font>
+        </Label>
+        <Button fx:id="goBackButton" layoutX="355.0" layoutY="562.0" mnemonicParsing="false" onAction="#goBackButtonHandler" prefHeight="27.0" prefWidth="180.0" text="Go Back" />
+    </children>
+</AnchorPane>

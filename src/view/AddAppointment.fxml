@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="611.0" prefWidth="905.0" style="-fx-background-color: slategrey; -fx-border-color: black;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AddAppointmentController">
+    <children>
+        <Label fx:id="appUpdateLabel" layoutX="505.0" layoutY="53.0" text="Appointment Form" textFill="WHITE">
+            <font>
+                <Font name="Times New Roman" size="36.0" />
+            </font>
+        </Label>
+        <GridPane layoutX="453.0" layoutY="93.0" prefHeight="386.0" prefWidth="381.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="11.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="ALWAYS" minWidth="11.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="11.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="11.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="11.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="11.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="11.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="11.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="11.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="11.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="11.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="11.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="11.0" prefHeight="30.0" vgrow="ALWAYS" />
+            </rowConstraints>
+            <children>
+                <TextField fx:id="appIDEntryBox" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                <Label text="Customer ID" textFill="WHITE" GridPane.rowIndex="1">
+                    <font>
+                        <Font name="Times New Roman" size="20.0" />
+                    </font>
+                </Label>
+                <TextField fx:id="custIDEntryBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Label layoutX="11.0" layoutY="22.0" text="Title" textFill="WHITE" GridPane.rowIndex="2">
+                    <font>
+                        <Font name="Times New Roman" size="20.0" />
+                    </font>
+                </Label>
+                <TextField fx:id="titleEntryBox" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <Label text="Description" textFill="WHITE" GridPane.rowIndex="3">
+                    <font>
+                        <Font name="Times New Roman" size="20.0" />
+                    </font>
+                </Label>
+                <TextField fx:id="descriptionEntryBox" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <Label text="Type" textFill="WHITE" GridPane.rowIndex="4">
+                    <font>
+                        <Font name="Times New Roman" size="20.0" />
+                    </font>
+                </Label>
+                <ComboBox fx:id="comboBoxType" prefHeight="25.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <Label text="Contact Name" textFill="WHITE" GridPane.rowIndex="5">
+                    <font>
+                        <Font name="Times New Roman" size="20.0" />
+                    </font>
+                </Label>
+                <ComboBox fx:id="comboBoxContact" prefHeight="26.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                <Label text="Location" textFill="WHITE" GridPane.rowIndex="6">
+                    <font>
+                        <Font name="Times New Roman" size="20.0" />
+                    </font>
+                </Label>
+                <ComboBox fx:id="comboBoxLocation" prefHeight="26.0" prefWidth="208.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                <Label text="Start/End Date" textFill="WHITE" GridPane.rowIndex="7">
+                    <font>
+                        <Font name="Times New Roman" size="20.0" />
+                    </font>
+                </Label>
+                <DatePicker fx:id="dateStartPicker" prefWidth="208.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                <Label text="Start Time" textFill="WHITE" GridPane.rowIndex="8">
+                    <font>
+                        <Font name="Times New Roman" size="20.0" />
+                    </font>
+                </Label>
+                <ComboBox fx:id="comboBoxStart" prefHeight="26.0" prefWidth="204.0" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                <Label text="End Time" textFill="WHITE" GridPane.rowIndex="9">
+                    <font>
+                        <Font name="Times New Roman" size="20.0" />
+                    </font>
+                </Label>
+                <ComboBox fx:id="comboBoxEnd" prefHeight="26.0" prefWidth="190.0" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                <Label text="User ID" textFill="WHITE" GridPane.rowIndex="10">
+                    <font>
+                        <Font name="Times New Roman" size="20.0" />
+                    </font>
+                </Label>
+                <TextField fx:id="userIDEntryBox" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+            <Label prefHeight="27.0" prefWidth="176.0" text="Appointment ID" textFill="WHITE">
+               <font>
+                  <Font name="Times New Roman" size="20.0" />
+               </font>
+            </Label>
+            </children>
+        </GridPane>
+        <Button fx:id="buttonToSave" layoutX="684.0" layoutY="529.0" mnemonicParsing="false" onAction="#buttonToSaveHandler" prefHeight="26.0" prefWidth="150.0" text="Save Appointment" />
+        <Button fx:id="buttonToCancel" layoutX="453.0" layoutY="529.0" mnemonicParsing="false" onAction="#buttonToCancel" prefHeight="26.0" prefWidth="150.0" text="Cancel / Go Back" />
+        <TableView fx:id="custListDisplay" layoutX="72.0" layoutY="102.0" prefHeight="386.0" prefWidth="315.0">
+            <columns>
+                <TableColumn fx:id="colCustID" prefWidth="95.199951171875" text="CustomerID" />
+                <TableColumn fx:id="colCustName" prefWidth="219.99998474121094" text="Customer Name" />
+            </columns>
+        </TableView>
+        <Label layoutX="127.0" layoutY="53.0" text="Customer List" textFill="WHITE">
+            <font>
+                <Font name="Times New Roman" size="36.0" />
+            </font>
+        </Label>
+    </children>
+</AnchorPane>

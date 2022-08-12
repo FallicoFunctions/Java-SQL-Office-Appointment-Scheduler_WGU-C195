@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="685.0" prefWidth="1269.0" style="-fx-background-color: slategrey;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainAppointmentsController">
+    <children>
+        <Label layoutX="498.0" layoutY="20.0" text="List of Appointments" textFill="WHITE">
+            <font>
+                <Font name="Times New Roman" size="32.0" />
+            </font>
+        </Label>
+        <Button fx:id="newAppButton" layoutX="641.0" layoutY="600.0" mnemonicParsing="false" onAction="#newAppButtonHandler" prefHeight="27.0" prefWidth="185.0" text="Add New Appointment" />
+        <Button layoutX="443.0" layoutY="600.0" mnemonicParsing="false" onAction="#deleteHandler" prefHeight="27.0" prefWidth="185.0" text="Delete Selected Appointment" />
+        <Button fx:id="updateButton" layoutX="443.0" layoutY="644.0" mnemonicParsing="false" onAction="#updateButtonHandler" prefHeight="27.0" prefWidth="185.0" text="Update Selected Appointment" />
+        <TableView fx:id="tableOfAppointments" layoutX="90.0" layoutY="120.0" prefHeight="400.0" prefWidth="1100.0">
+            <columns>
+                <TableColumn fx:id="colStartTime" prefWidth="115.0" text="Start" />
+                <TableColumn fx:id="colEndTime" prefWidth="115.0" text="End" />
+                <TableColumn fx:id="colTitle" prefWidth="100.0" text="Title" />
+                <TableColumn fx:id="colType" prefWidth="109.1" text="Type" />
+                <TableColumn fx:id="colCustomer" prefWidth="80.0" text="Customer_ID" />
+                <TableColumn fx:id="colContact" prefWidth="143.0" text="Contact" />
+                <TableColumn fx:id="colID" prefWidth="109.1" text="Appointment_ID" />
+                <TableColumn fx:id="colDescription" prefWidth="109.1" text="Description" />
+                <TableColumn fx:id="colLocation" prefWidth="109.1" text="Location" />
+                <TableColumn fx:id="colUserID" prefWidth="109.1" text="User_ID" />
+            </columns>
+        </TableView>
+        <RadioButton fx:id="weekSelector" layoutX="85.0" layoutY="38.0" mnemonicParsing="false" onAction="#weekSelectorHandler" text="Current Week" textFill="WHITE">
+            <font>
+                <Font name="Times New Roman" size="18.0" />
+            </font>
+        </RadioButton>
+        <RadioButton fx:id="monthSelector" layoutX="85.0" layoutY="69.0" mnemonicParsing="false" onAction="#monthSelectorHandler" text="Current Month" textFill="WHITE">
+            <font>
+                <Font name="Times New Roman" size="18.0" />
+            </font>
+        </RadioButton>
+        <Button layoutX="641.0" layoutY="644.0" mnemonicParsing="false" onAction="#AppointmentsBackButtonHandler" prefHeight="27.0" prefWidth="185.0" text="Go Back" />
+      <RadioButton fx:id="allSelector" layoutX="247.0" layoutY="69.0" mnemonicParsing="false" onAction="#allSelectorHandler" text="All Appointments" textFill="WHITE">
+         <font>
+            <Font name="Times New Roman" size="18.0" />
+         </font>
+      </RadioButton>
+    </children>
+</AnchorPane>

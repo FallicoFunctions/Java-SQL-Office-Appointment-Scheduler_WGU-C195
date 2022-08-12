@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="683.0" prefWidth="1115.0" style="-fx-background-color: slategrey; -fx-border-color: black; -fx-border-radius: 5;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomerScreenController">
+    <children>
+        <Label alignment="TOP_CENTER" layoutX="155.0" layoutY="50.0" prefHeight="38.0" prefWidth="420.0" style="-fx-border-color: gray" text="List of Customers" textAlignment="CENTER" textFill="WHITE">
+            <font>
+                <Font name="Times New Roman" size="36.0" />
+            </font>
+        </Label>
+        <TitledPane alignment="CENTER" animated="false" layoutX="727.0" layoutY="102.0" prefHeight="464.0" prefWidth="374.0" text="Customer Information">
+            <content>
+                <GridPane prefHeight="292.0" prefWidth="373.0" style="-fx-background-color: slategrey;">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" maxWidth="172.2000732421875" minWidth="10.0" prefWidth="148.0" />
+                        <ColumnConstraints hgrow="ALWAYS" maxWidth="268.199951171875" minWidth="10.0" prefWidth="204.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                    </rowConstraints>
+                    <children>
+                        <TextField fx:id="custIDEntryBox" GridPane.columnIndex="1" />
+                        <Label text="Customer ID" textFill="WHITE">
+                            <font>
+                                <Font size="18.0" />
+                            </font></Label>
+                        <Label text="Customer Name" textFill="WHITE" wrapText="true" GridPane.rowIndex="1">
+                            <font>
+                                <Font size="18.0" />
+                            </font></Label>
+                        <Label text="Address" textFill="WHITE" GridPane.rowIndex="2">
+                            <font>
+                                <Font size="18.0" />
+                            </font></Label>
+                        <Label prefHeight="45.0" prefWidth="98.0" text="Country" textFill="WHITE" GridPane.rowIndex="3">
+                            <font>
+                                <Font size="18.0" />
+                            </font></Label>
+                        <Label text="First Level Division" textFill="WHITE" wrapText="true" GridPane.rowIndex="4">
+                            <font>
+                                <Font size="18.0" />
+                            </font></Label>
+                        <Label text="Postal Code" textFill="WHITE" GridPane.rowIndex="5">
+                            <font>
+                                <Font size="18.0" />
+                            </font></Label>
+                        <Label text="Phone No." textFill="WHITE" GridPane.rowIndex="6">
+                            <font>
+                                <Font size="18.0" />
+                            </font></Label>
+                        <TextField fx:id="custNameEntryBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <TextField fx:id="custAddressEntryBox" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <ComboBox fx:id="comboBoxCounty" onAction="#comboBoxCountyHandler" prefHeight="26.0" prefWidth="252.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <ComboBox fx:id="comboBoxFirstLevel" prefHeight="26.0" prefWidth="252.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <TextField fx:id="zipCodeEntryBox" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        <TextField fx:id="phoneEntryBox" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                        <Button fx:id="buttonToSave" minWidth="66.0" mnemonicParsing="false" onAction="#buttonToSaveHandler" prefHeight="26.0" prefWidth="111.0" text="Save Info" GridPane.rowIndex="7" />
+                        <Button fx:id="buttonToCancel" mnemonicParsing="false" onAction="#buttonToCancelHandler" prefHeight="25.0" prefWidth="111.0" text="Cancel" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                    </children>
+                </GridPane>
+            </content>
+        </TitledPane>
+        <AnchorPane layoutX="16.0" layoutY="102.0" prefHeight="404.0" prefWidth="698.0" style="-fx-background-color: slategrey;">
+            <children>
+                <TableView fx:id="CustomerTable" layoutY="1.0" prefHeight="403.0" prefWidth="698.0" style="-fx-border-color: black; -fx-border-radius: 5;">
+                    <columns>
+                        <TableColumn fx:id="columnID" prefWidth="40.0" text="ID" />
+                        <TableColumn fx:id="columnName" prefWidth="147.0" text="Customer Name" />
+                        <TableColumn fx:id="columnAddress" prefWidth="158.0" text="Address" />
+                        <TableColumn fx:id="columnPhone" prefWidth="123.0" text="Phone" />
+                        <TableColumn fx:id="columnPostalCode" prefWidth="92.0" text="Postal Code" />
+                        <TableColumn fx:id="columnDivision" prefWidth="136.0" text="Division" />
+                    </columns>
+                </TableView>
+            </children>
+        </AnchorPane>
+        <Button fx:id="buttonToGoBack" layoutX="989.0" layoutY="601.0" mnemonicParsing="false" onAction="#buttonToGoBackHandler" prefWidth="111.0" text="Go Back" />
+        <Button layoutX="726.0" layoutY="601.0" mnemonicParsing="false" onAction="#CustomerAddButtonHandler" prefWidth="111.0" text="Create Customer" />
+        <Button fx:id="CustomerDeleteButton" layoutX="859.0" layoutY="601.0" mnemonicParsing="false" onAction="#CustomerDeleteButtonHandler" prefWidth="111.0" text="Delete Customer" />
+        <Label layoutX="14.0" layoutY="512.0" prefHeight="87.0" prefWidth="679.0" text="Click the create button to add a new customer. Select a customer in the table to update their information." textFill="#f6ff00" underline="true" wrapText="true">
+            <font>
+                <Font name="Times New Roman" size="24.0" />
+            </font>
+        </Label>
+      <Label fx:id="addUpdateLabel" alignment="TOP_CENTER" layoutX="726.0" layoutY="52.0" prefHeight="38.0" prefWidth="374.0" style="-fx-border-color: gray" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Times New Roman" size="25.0" />
+         </font>
+      </Label>
+    </children>
+</AnchorPane>
