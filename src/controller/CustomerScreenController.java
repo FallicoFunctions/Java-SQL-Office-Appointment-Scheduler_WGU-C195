@@ -9,8 +9,6 @@ import java.sql.Statement;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -45,63 +43,59 @@ public class CustomerScreenController implements Initializable {
     @FXML
     public TableColumn columnDivision;
     @FXML
-    private Label addUpdateLabel;
+    public Label addUpdateLabel;
     @FXML
-    private TableView<Customer> CustomerTable;
+    public TableView<Customer> displayCustomerList;
     @FXML
-    private TableColumn<Customer, Integer> columnID;
+    public TableColumn<Customer, Integer> columnID;
     @FXML
-    private TableColumn<Customer, String> columnName;
+    public TableColumn<Customer, String> columnName;
     @FXML
-    private TableColumn<Customer, String> columnPhone;
+    public TableColumn<Customer, String> columnPhone;
     @FXML
-    private TextField custIDEntryBox;
+    public TextField custIDEntryBox;
     @FXML
-    private ComboBox<String> comboBoxFirstLevel;
+    public ComboBox<String> comboBoxFirstLevel;
     @FXML
-    private ComboBox<String> comboBoxCounty;
+    public ComboBox<String> comboBoxCounty;
     @FXML
-    private Button buttonToSave;
+    public Button buttonToSave;
     @FXML
-    private Button buttonToCancel;
+    public Button buttonToCancel;
     @FXML
-    private Button CustomerDeleteButton;
+    public Button CustomerDeleteButton;
     @FXML
-    private TextField custNameEntryBox;
+    public TextField custNameEntryBox;
     @FXML
-    private TextField custAddressEntryBox;
+    public TextField custAddressEntryBox;
     @FXML
-    private TextField zipCodeEntryBox;
+    public TextField zipCodeEntryBox;
     @FXML
-    private TextField phoneEntryBox;
+    public TextField phoneEntryBox;
     @FXML
-    private Button buttonToGoBack;
-
-    Parent parent;
-    Stage setup;
-
-    //create ObservableLists
+    public Button buttonToGoBack;
+    
     ObservableList<Customer> listOfCusts = FXCollections.observableArrayList();
     ObservableList<String> firstLevelOptions = FXCollections.observableArrayList();
-    ObservableList<String> countryOptions = FXCollections.observableArrayList();
-
-    private boolean customerUpdate = false; //used to determine whether to UPDATE customer in the database
-    private boolean customerAdd = false; //used to determine whether to INSERT customer in the database
-
+    ObservableList<String> listOfCountries = FXCollections.observableArrayList();
+    Parent parent;
+    Stage setup;
+    boolean reviseCust = false; //Boolean for revising current customers
+    boolean newCust = false; //Boolean for saving new customers
     ResourceBundle rb = ResourceBundle.getBundle("properties.login", Locale.getDefault());
 
     /** Initializes the controller class.
      * @param url The URL parameter.
      * @param rb The ResourceBundle parameter.
      * <p>
-     * There is a lambda listener expression on line 132. It is justified because it listens for the mouse click in the
+     * There is a lambda listener expression on line 122. It is justified because it listens for the mouse click in the
      * customer table. Then it populates the customer form with the selected customer's info. It is more efficient
      * to use a lambda for this task.
      * </p>
      * */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        //Populate CustomerTable with values
+        //Input customer data into the tableview
         columnID.setCellValueFactory(new PropertyValueFactory<>("CustomerID"));
         columnName.setCellValueFactory(new PropertyValueFactory<>("CustomerName"));
         columnPhone.setCellValueFactory(new PropertyValueFactory<>("CustomerPhone"));
@@ -110,26 +104,20 @@ public class CustomerScreenController implements Initializable {
         columnPostalCode.setCellValueFactory(new PropertyValueFactory<>("CustomerPostalCode"));
 
         custIDEntryBox.setText("Auto Generated");
-
-        //disable input for CustomerID since its auto-generated
-        disableCustomerFields();
-
+        turnOffEntryBoxes();
         try {
             System.out.println("Current userID: " + User.getUserID());
             System.out.println("Current Username: " + User.getUsername());
-            updateCustomerTable();
+            loadCustomerData();
             try {
                 fillCountryComboBox();
             } catch (Exception ex) {
                 ex.printStackTrace();
-                Logger.getLogger(CustomerScreenController.class.getName()).log(Level.SEVERE, null, ex);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-            Logger.getLogger(CustomerScreenController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //Listen for mouse click on item in Customer Table
-        CustomerTable.getSelectionModel().selectedItemProperty().addListener(
+        displayCustomerList.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     try {
                         customerListener(newValue);
@@ -140,36 +128,29 @@ public class CustomerScreenController implements Initializable {
                 });
     }
 
-    /** This method loads customers and their info into the table. */
-    public void updateCustomerTable() throws SQLException {
+    /** This method inputs customers data into the tableview. */
+    public void loadCustomerData() throws SQLException {
         System.out.println("***** Begin Update Customer Table *****");
         listOfCusts.clear();
-        //create statement object
-        Statement stmt = ConnectDB.conn.createStatement();
-
-        //Write SQL statement (columns from two tables)
         String sqlStatement = "SELECT customer_Id, customer_Name, phone, address, Postal_Code, first_level_divisions.Division, first_level_divisions.Division_ID, Country_ID FROM customers, first_level_divisions WHERE customers.Division_ID = first_level_divisions.Division_ID ORDER BY customers.customer_Name";
-
-        //execute statement and create resultset object
-        ResultSet result = stmt.executeQuery(sqlStatement);
-
-        //get all records from resultset object
-        while (result.next()) {
-            Customer cust = new Customer();
-            cust.setCustomerID(result.getInt("customer_Id"));
-            cust.setCustomerName(result.getString("customer_Name"));
-            cust.setCustomerAddress(result.getString("address"));
-            cust.setCustomerPhone(result.getString("phone"));
-            cust.setCustomerPostalCode(result.getString("postal_code"));
-            cust.setDivision(result.getString("division"));
-            listOfCusts.addAll(cust);
+        PreparedStatement sql = ConnectDB.makeConnection().prepareStatement(sqlStatement);
+        ResultSet set = sql.executeQuery(sqlStatement);
+        while (set.next()) {
+            Customer current = new Customer();
+            current.setCustomerID(set.getInt("customer_Id"));
+            current.setCustomerName(set.getString("customer_Name"));
+            current.setCustomerAddress(set.getString("address"));
+            current.setCustomerPhone(set.getString("phone"));
+            current.setCustomerPostalCode(set.getString("postal_code"));
+            current.setDivision(set.getString("division"));
+            listOfCusts.addAll(current);
         }
-        CustomerTable.setItems(listOfCusts);
+        displayCustomerList.setItems(listOfCusts);
         System.out.println("***** End Update Customer Table *****");
     }
 
     /** This method clears all comboboxes and text fields. */
-    public void clearTextFields() {
+    public void emptyEntryBoxes() {
         addUpdateLabel.setText("");
         custIDEntryBox.setText("");
         custNameEntryBox.setText("");
@@ -184,66 +165,49 @@ public class CustomerScreenController implements Initializable {
      * @param countryName Name of country selected and passed through to obtain first level divisions.
      * */
     public void fillFirstLevelBox(String countryName) {
-        //Write SQL statement
         System.out.println(countryName);
         comboBoxFirstLevel.getItems().clear();
-
-        String sqlStatement = "SELECT first_level_divisions.* FROM first_level_divisions, countries WHERE first_level_divisions.Country_ID = countries.country_ID AND countries.country = ?";
-
         try {
-            //create statement object
-            PreparedStatement pst = ConnectDB.makeConnection().prepareStatement(sqlStatement);
-            pst.setString(1, countryName);
-
-            //execute statement and create resultset object
-            ResultSet result = pst.executeQuery();
-
-            //get all records from resultset obj
-            while (result.next()) {
-                Customer cust = new Customer();
-                cust.setDivision(result.getString("division"));
-                firstLevelOptions.add(cust.getDivision());
+            PreparedStatement sql = ConnectDB.makeConnection().prepareStatement("SELECT first_level_divisions.* FROM first_level_divisions, countries WHERE first_level_divisions.Country_ID = countries.country_ID AND countries.country = ?");
+            sql.setString(1, countryName);
+            ResultSet set = sql.executeQuery();
+            while (set.next()) {
+                Customer current = new Customer();
+                current.setDivision(set.getString("division"));
+                firstLevelOptions.add(current.getDivision());
                 comboBoxFirstLevel.setItems(firstLevelOptions);
             }
-            pst.close();
-            result.close();
+            sql.close();
+            set.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
 
     /** This method populates CountryComboBox with all available countries. */
-    public void fillCountryComboBox() throws SQLException, Exception {
-        //create statement object
-        Statement stmt = ConnectDB.makeConnection().createStatement();
-
-        //Write SQL statement (columns from two tables)
-        String sqlStatement = "SELECT country FROM countries";
-
-        //execute statement and create resultset object
-        ResultSet result = stmt.executeQuery(sqlStatement);
-
-        //get all records from resultset obj
-        while (result.next()) {
+    public void fillCountryComboBox() throws Exception {
+        PreparedStatement sql = ConnectDB.makeConnection().prepareStatement("SELECT country FROM countries");
+        ResultSet set = sql.executeQuery();
+        while (set.next()) {
             Customer cust = new Customer();
-            cust.setCustomerCountry(result.getString("country"));
-            countryOptions.add(cust.getCustomerCountry());
-            comboBoxCounty.setItems(countryOptions);
+            cust.setCustomerCountry(set.getString("country"));
+            listOfCountries.add(cust.getCustomerCountry());
+            comboBoxCounty.setItems(listOfCountries);
         }
-        stmt.close();
-        result.close();
+        sql.close();
+        set.close();
     }
 
     /** This method calls the firstLevelBox method when this handler is activated.
      * @param event When actioned it calls the fillFirstLevelBox method.
      * <p>
-     * There is a lambda listener expression on line 247. It is justified because it listens for the mouse click in the
+     * There is a lambda listener expression on line 211. It is justified because it listens for the mouse click in the
      * country combobox. Then it populates the first level box with the selected country's division. It is more efficient
      * to use a lambda for this task.
      * </p>
      * */
     @FXML
-    private void comboBoxCountyHandler(ActionEvent event) {
+    public void comboBoxCountyHandler(ActionEvent event) {
         comboBoxCounty.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     try {
@@ -256,24 +220,24 @@ public class CustomerScreenController implements Initializable {
     }
 
     /** This method calls other methods to save customer info.
-     * saveCustomer method if new customer.
-     * updateCustomer method if existing customer.
+     * insertNewCustSQL method if new customer.
+     * insertExistingCustSQL method if existing customer.
      * @param event When actioned it calls either of the mentioned methods.
      * */
     @FXML
-    private void buttonToSaveHandler(ActionEvent event) throws Exception {
-        System.out.println("CustomerAdd: " + customerAdd);
-        System.out.println("CustomerUpdate: " + customerUpdate);
-        if (custNameEntryBox.getText() != null && customerAdd || customerUpdate) {
+    public void buttonToSaveHandler(ActionEvent event) throws Exception {
+        System.out.println("newCust: " + newCust);
+        System.out.println("reviseCust: " + reviseCust);
+        if (custNameEntryBox.getText() != null && newCust || reviseCust) {
             if (validCustomer()) {
-                if (customerAdd) {
-                    saveCustomer();
-                    clearTextFields();
-                    updateCustomerTable();
-                } else if (customerUpdate) {
-                    updateCustomer();
-                    clearTextFields();
-                    updateCustomerTable();
+                if (newCust) {
+                    insertNewCustSQL();
+                    emptyEntryBoxes();
+                    loadCustomerData();
+                } else if (reviseCust) {
+                    insertExistingCustSQL();
+                    emptyEntryBoxes();
+                    loadCustomerData();
                 }
             }
         } else {
@@ -281,134 +245,125 @@ public class CustomerScreenController implements Initializable {
         }
     }
 
-    /** This method saves a new customer. */
-    private void saveCustomer() throws Exception {
+    /** This method inserts newly created customer data into the SQL database. */
+    public void insertNewCustSQL() throws Exception {
         System.out.println("***** Begin Save Customer *****");
         try {
-            //Insert new customer into DB
-            PreparedStatement psc = ConnectDB.makeConnection().prepareStatement("INSERT INTO customers (customer_Name, address, postal_code, phone, create_Date, created_By, last_Update, last_Updated_By, division_Id) "
+            PreparedStatement sql = ConnectDB.makeConnection().prepareStatement("INSERT INTO customers (customer_Name, address, postal_code, phone, create_Date, created_By, last_Update, last_Updated_By, division_Id) "
                     + "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?, CURRENT_TIMESTAMP, ?, ?)");
 
-            psc.setString(1, custNameEntryBox.getText());
-            psc.setString(2, custAddressEntryBox.getText());
-            psc.setString(3, zipCodeEntryBox.getText());
-            psc.setString(4, phoneEntryBox.getText());
-            psc.setString(5, User.getUsername());
-            psc.setString(6, User.getUsername());
-            psc.setInt(7, getDivisionID(comboBoxFirstLevel.getValue()));
-            int results = psc.executeUpdate();
-
-            psc.close();
-        } catch (SQLException e) {
+            sql.setString(1, custNameEntryBox.getText());
+            sql.setString(2, custAddressEntryBox.getText());
+            sql.setString(3, zipCodeEntryBox.getText());
+            sql.setString(4, phoneEntryBox.getText());
+            sql.setString(5, User.getUsername());
+            sql.setString(6, User.getUsername());
+            sql.setInt(7, getDivisionID(comboBoxFirstLevel.getValue()));
+            int sets = sql.executeUpdate();
+            sql.close();
+        } catch (SQLException sql) {
             System.out.println("SQL statement has an error!");
-            e.printStackTrace();
+            sql.printStackTrace();
         }
-        clearTextFields();
-        disableCustomerFields();
-        updateCustomerTable();
-        customerAdd = false;
-        customerUpdate = false;
-
+        emptyEntryBoxes();
+        turnOffEntryBoxes();
+        loadCustomerData();
+        newCust = false;
+        reviseCust = false;
         System.out.println("***** End Save Customer *****");
     }
 
     /** This method deletes the selected customer in customer table.
      * @param customer Customer that is selected in table.
      * */
-    private void deleteCustomer(Customer customer) throws Exception {
+    public void removeCustomer(Customer customer) throws Exception {
         System.out.println("***** Begin Delete Customer *****");
         try {
-            PreparedStatement ps = ConnectDB.makeConnection().prepareStatement("DELETE FROM appointments where Customer_ID = ?");
+            PreparedStatement sql = ConnectDB.makeConnection().prepareStatement("DELETE FROM appointments where Customer_ID = ?");
             System.out.println("Delete appointments for CustomerID: " + customer.getCustomerID());
-            ps.setInt(1, customer.getCustomerID());
-            int result = ps.executeUpdate();
+            sql.setInt(1, customer.getCustomerID());
+            int sets = sql.executeUpdate();
 
-            PreparedStatement ps1 = ConnectDB.makeConnection().prepareStatement("DELETE FROM customers where Customer_ID = ?");
+            PreparedStatement sql2 = ConnectDB.makeConnection().prepareStatement("DELETE FROM customers where Customer_ID = ?");
             System.out.println("Delete customer with CustomerID: " + customer.getCustomerID());
-            ps1.setInt(1, customer.getCustomerID());
-            int result1 = ps1.executeUpdate();
+            sql2.setInt(1, customer.getCustomerID());
+            int sets1 = sql2.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Delete Customer SQL statement contains an error!");
         }
-        clearTextFields();
-        disableCustomerFields();
-        updateCustomerTable();
+        emptyEntryBoxes();
+        turnOffEntryBoxes();
+        loadCustomerData();
         System.out.println("***** End Delete Customer *****");
     }
 
-    /** This method updates current customer with all changes. */
-    private void updateCustomer() throws Exception {
+    /** This method inputs SQL updates for customer data. */
+    public void insertExistingCustSQL() throws Exception {
         System.out.println("***** Begin Update Customer *****");
         try {
-            PreparedStatement ps = ConnectDB.makeConnection().prepareStatement("UPDATE customers SET Customer_Name  = ?, Address = ?, postal_Code = ?, phone = ?, division_ID = ?, customers.last_Update = CURRENT_TIMESTAMP, customers.last_Updated_By = ? WHERE customers.Customer_ID = ? ");
+            PreparedStatement sql = ConnectDB.makeConnection().prepareStatement("UPDATE customers SET Customer_Name  " +
+                    "= ?, Address = ?, postal_Code = ?, phone = ?, division_ID = ?, customers.last_Update = " +
+                    "CURRENT_TIMESTAMP, customers.last_Updated_By = ? WHERE customers.Customer_ID = ? ");
 
-            ps.setString(1, custNameEntryBox.getText());
-            ps.setString(2, custAddressEntryBox.getText());
-            ps.setString(3, zipCodeEntryBox.getText());
-            ps.setString(4, phoneEntryBox.getText());
-            ps.setInt(5, getDivisionID(comboBoxFirstLevel.getValue()));
-            ps.setString(6, User.getUsername());
-            ps.setString(7, custIDEntryBox.getText());
+            sql.setString(1, custNameEntryBox.getText());
+            sql.setString(2, custAddressEntryBox.getText());
+            sql.setString(3, zipCodeEntryBox.getText());
+            sql.setString(4, phoneEntryBox.getText());
+            sql.setInt(5, getDivisionID(comboBoxFirstLevel.getValue()));
+            sql.setString(6, User.getUsername());
+            sql.setString(7, custIDEntryBox.getText());
             System.out.println("CustomerID for Update: " + custIDEntryBox.getText());
-
-            int result = ps.executeUpdate();
-
+            int sets = sql.executeUpdate();
         } catch (SQLException ex) {
             System.out.println("Update Customer SQL statement has an error!");
         }
-        clearTextFields();
-        disableCustomerFields();
-        updateCustomerTable();
-        customerAdd = false;
-        customerUpdate = false;
+        emptyEntryBoxes();
+        turnOffEntryBoxes();
+        loadCustomerData();
+        newCust = false;
+        reviseCust = false;
         System.out.println("***** End Update Customer *****");
     }
 
     /** This method checks to see if Customer data fields are valid before save/update.
      * @return Returns False or True based on validity checks.
      * */
-    private boolean validCustomer() {
-        String customerName = custNameEntryBox.getText().trim();
-        String address = custAddressEntryBox.getText().trim();
+    public boolean validCustomer() {
+        String nameOfCust = custNameEntryBox.getText().trim();
+        String custAddress = custAddressEntryBox.getText().trim();
         String division = comboBoxFirstLevel.getValue().trim();
-        String country = comboBoxCounty.getValue().trim();
-        String postalCode = zipCodeEntryBox.getText().trim();
-        String phone = phoneEntryBox.getText().trim();
+        String custCountry = comboBoxCounty.getValue().trim();
+        String custZipCode = zipCodeEntryBox.getText().trim();
+        String custTelephone = phoneEntryBox.getText().trim();
 
-        String errorMessage = "";
-        //first checks to see if inputs are null
-        if (customerName == null || customerName.length() == 0) {
-            errorMessage += rb.getString("nameerror") + "\n";
+        //The below if-statements verify if the customer entry fields are blank
+        String isValid = "";
+        if (nameOfCust.length() == 0) {
+            isValid += rb.getString("nameerror") + System.lineSeparator();
         }
-        if (address == null || address.length() == 0) {
-            errorMessage += rb.getString("addresserror") + "\n";
+        if (custAddress.length() == 0) {
+            isValid += rb.getString("addresserror") + System.lineSeparator();
         }
         if (division == null) {
-            errorMessage += rb.getString("divisionerror") + "\n";
+            isValid += rb.getString("divisionerror") + System.lineSeparator();
         }
-        if (country == null) {
-            errorMessage += rb.getString("countryerror") + "\n";
+        if (custCountry == null) {
+            isValid += rb.getString("countryerror") + System.lineSeparator();
         }
-        if (postalCode == null || postalCode.length() == 0) {
-            errorMessage += rb.getString("postalerror") + "\n";
-        } else if (postalCode.length() > 10 || postalCode.length() < 5) {
-            errorMessage += rb.getString("postallengtherror") + "\n";
+        if (custZipCode.length() <5) {
+            isValid += rb.getString("postalerror") + System.lineSeparator();
         }
-        if (phone == null || phone.length() == 0) {
-            errorMessage += rb.getString("phoneerror") + "\n";
-        } else if (phone.length() < 10 || phone.length() > 15) {
-            errorMessage += rb.getString("validphoneerror") + "\n";
+        if (custTelephone.length() < 10) {
+            isValid += rb.getString("phoneerror") + System.lineSeparator();
         }
-        if (errorMessage.length() == 0) {
+        if (isValid.length() == 0) {
             return true;
         } else {
-            // Show the error message.
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle(rb.getString("error"));
-            alert.setHeaderText(rb.getString("invalidcustomeralert"));
-            alert.setContentText(errorMessage);
-            Optional<ButtonType> result = alert.showAndWait();
-
+            Alert signal = new Alert(Alert.AlertType.ERROR);
+            signal.setTitle(rb.getString("error"));
+            signal.setHeaderText(rb.getString("invalidcustomeralert"));
+            signal.setContentText(isValid);
+            Optional<ButtonType> set = signal.showAndWait();
             return false;
         }
     }
@@ -417,26 +372,19 @@ public class CustomerScreenController implements Initializable {
      * @param division The division name selected.
      * @return Returns division ID.
      * */
-    private int getDivisionID(String division) throws SQLException, Exception {
+    public int getDivisionID(String division) throws SQLException, Exception {
         int divisionID = -1;
-
-        //create statement object
-        Statement statement = ConnectDB.makeConnection().createStatement();
-
-        //write SQL statement
-        String sqlStatement = "SELECT division_ID FROM first_level_divisions WHERE first_level_divisions.division ='" + division + "'";
-
-        //create resultset object
-        ResultSet result = statement.executeQuery(sqlStatement);
-
-        while (result.next()) {
-            divisionID = result.getInt("division_Id");
+        PreparedStatement sql = ConnectDB.makeConnection().prepareStatement( "SELECT division_ID FROM " +
+                "first_level_divisions WHERE first_level_divisions.division ='" + division + "'");
+        ResultSet set = sql.executeQuery();
+        while (set.next()) {
+            divisionID = set.getInt("division_Id");
         }
         return divisionID;
     }
 
     /** This method prevents inputs in customer fields when not adding or updating a customer. */
-    public void disableCustomerFields(){
+    public void turnOffEntryBoxes(){
         custIDEntryBox.setDisable(true);
         custNameEntryBox.setDisable(true);
         custAddressEntryBox.setDisable(true);
@@ -450,7 +398,7 @@ public class CustomerScreenController implements Initializable {
     }
 
     /** This method allows inputs to add/update customer. */
-    public void enableCustomerFields(){
+    public void turnOnfEntryBoxes(){
         custIDEntryBox.setDisable(false);
         custIDEntryBox.setEditable(false);
         custNameEntryBox.setDisable(false);
@@ -469,30 +417,26 @@ public class CustomerScreenController implements Initializable {
      * */
     public void customerListener(Customer customer) throws SQLException {
         System.out.println("***** Begin Customer Listener *****");
-        Customer cust = CustomerTable.getSelectionModel().getSelectedItem();
-        if (cust != null) {
-            int custId = cust.getCustomerID();
+        Customer current = displayCustomerList.getSelectionModel().getSelectedItem();
+        if (current != null) {
+            int custId = current.getCustomerID();
             addUpdateLabel.setText("Modify Existing Customer");
-            customerUpdate = true;
-            customerAdd = false;
-            enableCustomerFields();
-
-            //create statement object
-            PreparedStatement ps = ConnectDB.makeConnection().prepareStatement("SELECT customers.customer_Id, customer_Name, phone, address, Postal_Code, first_level_divisions.Division, first_level_divisions.Division_ID, countries.Country FROM customers, first_level_divisions, countries WHERE customers.customer_ID = ? AND customers.Division_ID = first_level_divisions.Division_ID AND first_level_divisions.Country_ID = countries.Country_ID");
-
-            //execute statement and create resultset object
-            ps.setInt(1, custId); //-----------not sure------
-            ResultSet result = ps.executeQuery();
-            System.out.println("SQL Statement: " + ps);
-            while (result.next()) {
-                System.out.println("CustomerID: " + result.getInt("customer_Id"));
-                custIDEntryBox.setText(Integer.toString(result.getInt("customer_Id")));
-                custNameEntryBox.setText(result.getString("customer_Name"));
-                custAddressEntryBox.setText(result.getString("address"));
-                comboBoxCounty.setValue(result.getString("country"));
-                comboBoxFirstLevel.setValue(result.getString("division"));
-                zipCodeEntryBox.setText(result.getString("Postal_Code"));
-                phoneEntryBox.setText(result.getString("phone"));
+            reviseCust = true;
+            newCust = false;
+            turnOnfEntryBoxes();
+            PreparedStatement sql = ConnectDB.makeConnection().prepareStatement("SELECT customers.customer_Id, customer_Name, phone, address, Postal_Code, first_level_divisions.Division, first_level_divisions.Division_ID, countries.Country FROM customers, first_level_divisions, countries WHERE customers.customer_ID = ? AND customers.Division_ID = first_level_divisions.Division_ID AND first_level_divisions.Country_ID = countries.Country_ID");
+            sql.setInt(1, custId); //-----------not sure------
+            ResultSet set = sql.executeQuery();
+            System.out.println("SQL Statement: " + sql);
+            while (set.next()) {
+                System.out.println("CustomerID: " + set.getInt("customer_Id"));
+                custIDEntryBox.setText(Integer.toString(set.getInt("customer_Id")));
+                custNameEntryBox.setText(set.getString("customer_Name"));
+                custAddressEntryBox.setText(set.getString("address"));
+                comboBoxCounty.setValue(set.getString("country"));
+                comboBoxFirstLevel.setValue(set.getString("division"));
+                zipCodeEntryBox.setText(set.getString("Postal_Code"));
+                phoneEntryBox.setText(set.getString("phone"));
                 System.out.println("***** End Customer Listener *****");
             }
         }
@@ -503,18 +447,17 @@ public class CustomerScreenController implements Initializable {
      * @param event In this case a mouse clicking the cancel button.
      * */
     @FXML
-    private void buttonToCancelHandler(ActionEvent event) throws IOException {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(rb.getString("confirmationrequired"));
-        alert.setHeaderText(rb.getString("confirmcancel"));
-        alert.setContentText(rb.getString("areyousure"));
-        Optional<ButtonType> result = alert.showAndWait();
-
-        if (result.get() == ButtonType.OK) {
-            customerUpdate = false;
-            customerAdd = false;
-            clearTextFields();
-            disableCustomerFields();
+    public void buttonToCancelHandler(ActionEvent event) throws IOException {
+        Alert signal = new Alert(Alert.AlertType.CONFIRMATION);
+        signal.setTitle(rb.getString("confirmationrequired"));
+        signal.setHeaderText(rb.getString("confirmcancel"));
+        signal.setContentText(rb.getString("areyousure"));
+        Optional<ButtonType> set = signal.showAndWait();
+        if (set.get() == ButtonType.OK) {
+            reviseCust = false;
+            newCust = false;
+            emptyEntryBoxes();
+            turnOffEntryBoxes();
         } else {
             System.out.println("Cancel canceled.");
         }
@@ -525,13 +468,13 @@ public class CustomerScreenController implements Initializable {
      * @param event A mouse click of the Add button.
      * */
     @FXML
-    private void CustomerAddButtonHandler(ActionEvent event) throws SQLException {
-        clearTextFields();
+    public void buttonToAddHandler(ActionEvent event) throws SQLException {
+        emptyEntryBoxes();
         addUpdateLabel.setText("Create New Customer");
         custIDEntryBox.setText("Auto Generated");
-        customerAdd = true;
-        customerUpdate = false;
-        enableCustomerFields();
+        newCust = true;
+        reviseCust = false;
+        turnOnfEntryBoxes();
     }
 
     /** This method handles the delete button.
@@ -539,31 +482,28 @@ public class CustomerScreenController implements Initializable {
      * @param event A mouse click of the delete button.
      * */
     @FXML
-    private void CustomerDeleteButtonHandler(ActionEvent event) throws Exception {
-        if (CustomerTable.getSelectionModel().getSelectedItem() != null) {
-
-            Customer cust = CustomerTable.getSelectionModel().getSelectedItem();
-            String custName = cust.getCustomerName();
-            String custPhone = cust.getCustomerPhone();
+    public void buttonToDeleteHandler(ActionEvent event) throws Exception {
+        if (displayCustomerList.getSelectionModel().getSelectedItem() != null) {
+            Customer current = displayCustomerList.getSelectionModel().getSelectedItem();
+            String custName = current.getCustomerName();
+            String custPhone = current.getCustomerPhone();
             System.out.println("Name: " + custName);
             System.out.println("Phone: " + custPhone);
-            System.out.println("CustomerID : " + cust.getCustomerID());
+            System.out.println("CustomerID : " + current.getCustomerID());
 
-            //String customerName = customer.getCustomerName();
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle(rb.getString("confirmationrequired"));
-            alert.setHeaderText(rb.getString("confirmationdelete"));
-            alert.setContentText(rb.getString("confirmdeletealertcontent") + cust.getCustomerID() + "?");
-            Optional<ButtonType> result = alert.showAndWait();
-
-            if (result.get() == ButtonType.OK) {
+            //Alert signal
+            Alert signal = new Alert(Alert.AlertType.CONFIRMATION);
+            signal.setTitle(rb.getString("confirmationrequired"));
+            signal.setHeaderText(rb.getString("confirmationdelete"));
+            signal.setContentText(rb.getString("confirmdeletealertcontent") + current.getCustomerID() + "?");
+            Optional<ButtonType> set = signal.showAndWait();
+            if (set.get() == ButtonType.OK) {
                 System.out.println("Deleting customer...");
-                deleteCustomer(cust);
-                System.out.println("CustomerID: " + cust.getCustomerID() + " has been deleted!");
-
-                clearTextFields();
-                disableCustomerFields();
-                updateCustomerTable();
+                removeCustomer(current);
+                System.out.println("CustomerID: " + current.getCustomerID() + " has been deleted!");
+                emptyEntryBoxes();
+                turnOffEntryBoxes();
+                loadCustomerData();
             } else {
                 System.out.println("DELETE was canceled.");
             }
@@ -577,7 +517,7 @@ public class CustomerScreenController implements Initializable {
      * @param event A mouse click of the back button.
      * */
     @FXML
-    private void buttonToGoBackHandler(ActionEvent event) throws IOException {
+    public void buttonToGoBackHandler(ActionEvent event) throws IOException {
         parent = FXMLLoader.load(getClass().getResource("/view/MainScreen.fxml"));
         setup = (Stage) buttonToGoBack.getScene().getWindow();
         Scene scene = new Scene(parent);
@@ -585,4 +525,3 @@ public class CustomerScreenController implements Initializable {
         setup.show();
     }
 }
-

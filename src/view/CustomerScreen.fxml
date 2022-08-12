@@ -72,7 +72,7 @@
         </TitledPane>
         <AnchorPane layoutX="16.0" layoutY="102.0" prefHeight="404.0" prefWidth="698.0" style="-fx-background-color: slategrey;">
             <children>
-                <TableView fx:id="CustomerTable" layoutY="1.0" prefHeight="403.0" prefWidth="698.0" style="-fx-border-color: black; -fx-border-radius: 5;">
+                <TableView fx:id="displayCustomerList" layoutY="1.0" prefHeight="403.0" prefWidth="698.0" style="-fx-border-color: black; -fx-border-radius: 5;">
                     <columns>
                         <TableColumn fx:id="columnID" prefWidth="40.0" text="ID" />
                         <TableColumn fx:id="columnName" prefWidth="147.0" text="Customer Name" />
@@ -85,8 +85,8 @@
             </children>
         </AnchorPane>
         <Button fx:id="buttonToGoBack" layoutX="989.0" layoutY="601.0" mnemonicParsing="false" onAction="#buttonToGoBackHandler" prefWidth="111.0" text="Go Back" />
-        <Button layoutX="726.0" layoutY="601.0" mnemonicParsing="false" onAction="#CustomerAddButtonHandler" prefWidth="111.0" text="Create Customer" />
-        <Button fx:id="CustomerDeleteButton" layoutX="859.0" layoutY="601.0" mnemonicParsing="false" onAction="#CustomerDeleteButtonHandler" prefWidth="111.0" text="Delete Customer" />
+        <Button layoutX="726.0" layoutY="601.0" mnemonicParsing="false" onAction="#buttonToAddHandler" prefWidth="111.0" text="Create Customer" />
+        <Button fx:id="CustomerDeleteButton" layoutX="859.0" layoutY="601.0" mnemonicParsing="false" onAction="#buttonToDeleteHandler" prefWidth="111.0" text="Delete Customer" />
         <Label layoutX="14.0" layoutY="512.0" prefHeight="87.0" prefWidth="679.0" text="Click the create button to add a new customer. Select a customer in the table to update their information." textFill="#f6ff00" underline="true" wrapText="true">
             <font>
                 <Font name="Times New Roman" size="24.0" />
