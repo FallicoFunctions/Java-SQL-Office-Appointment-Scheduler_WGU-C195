@@ -11,9 +11,9 @@ import java.time.ZoneId;
 public class DateTime {
 
     public static java.sql.Timestamp getTimeStamp() {
-        ZoneId zoneid = ZoneId.of("UTC");
-        LocalDateTime localDateTime = LocalDateTime.now(zoneid);
-        java.sql.Timestamp timeStamp = Timestamp.valueOf(localDateTime);
+        ZoneId currentUserID = ZoneId.of("UTC");
+        LocalDateTime currentUserDate = LocalDateTime.now(currentUserID);
+        java.sql.Timestamp timeStamp = Timestamp.valueOf(currentUserDate);
         return timeStamp;
     }
 

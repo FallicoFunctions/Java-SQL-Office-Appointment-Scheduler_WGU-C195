@@ -18,14 +18,12 @@ public class Main extends Application {
      * */
     @Override
     public void start(Stage stage) throws Exception {
-        //Locale.setDefault(new Locale("fr")); //----Use this code to change program to french
+        //Locale.setDefault(new Locale("fr")); //----Use this hardcode program to french for testing
         System.out.println("Start...");
-
         Parent parent = FXMLLoader.load(getClass().getResource("/view/Login.fxml"));
         Scene scene = new Scene(parent);
         stage.setScene(scene);
         stage.show();
-
         System.out.println("End of Start section");
     }
 
@@ -35,7 +33,6 @@ public class Main extends Application {
      * @throws java.sql.SQLException
      */
     public static void main(String[] args) throws SQLException, Exception {
-        //Locale.setDefault(new Locale("fr"));
         System.out.println(Locale.getDefault().toString());
         ConnectDB.makeConnection();
         launch(args);

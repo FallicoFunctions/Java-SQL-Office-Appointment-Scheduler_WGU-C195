@@ -8,13 +8,12 @@ import java.sql.SQLException;
  *  @author Nicholas Fallico
  * */
 public class ConnectDB {
-
-    //variables used to connect to database
-    private static final String databaseName = "client_schedule";
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/" + databaseName;
-    private static final String username = "sqlUser";
-    private static final String password = "Passw0rd!";
-    private static final String driver = "com.mysql.cj.jdbc.Driver";
+    //Declaring vars
+    public static String databaseName = "client_schedule";
+    public static String DB_URL = "jdbc:mysql://localhost:3306/" + databaseName;
+    public static String username = "sqlUser";
+    public static String password = "Passw0rd!";
+    public static String driver = "com.mysql.cj.jdbc.Driver";
     public static Connection conn = null;
 
     /** This method establishes a connection to the database. */
