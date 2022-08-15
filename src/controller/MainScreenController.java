@@ -24,8 +24,9 @@ import util.ConnectDB;
  */
 public class MainScreenController implements Initializable {
     @FXML
-    private Button customerScreenButton;
+    public Button customerScreenButton;
 
+    //Declare variables
     Parent parent;
     Stage setup;
 
@@ -81,13 +82,13 @@ public class MainScreenController implements Initializable {
     private void endProgramButton(ActionEvent event) throws SQLException {
         ResourceBundle rb = ResourceBundle.getBundle("properties.login", Locale.getDefault());
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(rb.getString("exitalerttitle"));
-        alert.setHeaderText(rb.getString("exitalertheader"));
-        alert.setContentText(rb.getString("exitalertcontent"));
-        Optional<ButtonType> result = alert.showAndWait();
+        Alert signal = new Alert(Alert.AlertType.CONFIRMATION);
+        signal.setTitle(rb.getString("exitalerttitle"));
+        signal.setHeaderText(rb.getString("exitalertheader"));
+        signal.setContentText(rb.getString("exitalertcontent"));
+        Optional<ButtonType> set = signal.showAndWait();
 
-        if (result.get() == ButtonType.OK) {
+        if (set.get() == ButtonType.OK) {
             ConnectDB.closeConnection();
             System.out.println("Program Exit.");
             System.exit(0);

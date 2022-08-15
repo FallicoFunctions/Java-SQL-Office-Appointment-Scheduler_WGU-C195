@@ -76,7 +76,7 @@ public class  MainAppointmentsController implements Initializable {
     @FXML
     public RadioButton monthSelector;
 
-    //Declaring variables
+    //Declaring variables and lists
     Parent parent;
     Stage setup;
     boolean shortSort; //Show appointments for this week only
@@ -85,7 +85,6 @@ public class  MainAppointmentsController implements Initializable {
     static int addUpdateFilter; //Changes label between "update" or "add"
     ObservableList<Appointment> appointmentsOL = FXCollections.observableArrayList();
     ResourceBundle rb = ResourceBundle.getBundle("properties.login", Locale.getDefault());
-
     DateTimeFormatter datetimeDTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     ZoneId localTime = ZoneId.systemDefault();
     ZoneId utcZoneID = ZoneId.of("UTC");

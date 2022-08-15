@@ -36,6 +36,18 @@ import util.ConnectDB;
  */
 public class ReportsScreenController implements Initializable {
     @FXML
+    public TableColumn<Appointment, String> contactColumnCustID;
+    @FXML
+    public TableColumn<Appointment, String> contactColumnTitle;
+    @FXML
+    public TableColumn<Appointment, String> contactColumnType;
+    @FXML
+    public TableColumn<Appointment, String> contactColumnStartTime;
+    @FXML
+    public TableColumn<Appointment, String> contactColumnEndTime;
+    @FXML
+    public Button goBackButton;
+    @FXML
     public TableColumn<Appointment, String> contactColumnID;
     @FXML
     public TableColumn<Appointment, String> contactColumnDescription;
@@ -43,18 +55,6 @@ public class ReportsScreenController implements Initializable {
     public ComboBox<String> contactComboBox;
     @FXML
     public ComboBox<String> countryComboBox;
-    @FXML
-    public TableColumn columnID;
-    @FXML
-    public TableColumn columnName;
-    @FXML
-    public TableColumn columnAddress;
-    @FXML
-    public TableColumn columnPhone;
-    @FXML
-    public TableColumn columnPostalCode;
-    @FXML
-    public TableColumn columnDivision;
     @FXML
     public TableView<Customer> customerCountryTable;
     @FXML
@@ -72,33 +72,20 @@ public class ReportsScreenController implements Initializable {
     @FXML
     private TableView<Appointment> contactScheduleDisplay;
     @FXML
-    private TableColumn<Appointment, String> contactColumnCustID;
+    public TableColumn columnID;
     @FXML
-    private TableColumn<Appointment, String> contactColumnTitle;
+    public TableColumn columnName;
     @FXML
-    private TableColumn<Appointment, String> contactColumnType;
+    public TableColumn columnAddress;
     @FXML
-    private TableColumn<Appointment, String> contactColumnStartTime;
+    public TableColumn columnPhone;
     @FXML
-    private TableColumn<Appointment, String> contactColumnEndTime;
+    public TableColumn columnPostalCode;
     @FXML
-    private Button goBackButton;
+    public TableColumn columnDivision;
 
-    Parent parent;
-    Stage setup;
-
-    //creates observablelists used for the 3 available reports
-    private final ObservableList<Appointment> scheduleOL = FXCollections.observableArrayList();
-    private final ObservableList<Reports> typesByMonthOL = FXCollections.observableArrayList();
-    private final ObservableList<String> contactOptions = FXCollections.observableArrayList();
-    private final ObservableList<Customer> listOfCusts = FXCollections.observableArrayList();
-    private final ObservableList<String> countryOptions = FXCollections.observableArrayList();
-    private final DateTimeFormatter datetimeDTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private final ZoneId localTime = ZoneId.systemDefault();
-    private final ZoneId utcZoneID = ZoneId.of("UTC");
-
-    //create array for storing how many of each appointment types are in each month
-    private int monthTypes[][] = new int[][]{
+    //This array will store data for the report screen and display data in a column by row view
+    public int dataArray[][] = new int[][]{
             {0, 0, 0, 0},
             {0, 0, 0, 0},
             {0, 0, 0, 0},
@@ -112,6 +99,18 @@ public class ReportsScreenController implements Initializable {
             {0, 0, 0, 0},
             {0, 0, 0, 0}
     };
+    
+    //Declare variables and observable lists
+    ObservableList<Appointment> scheduleOL = FXCollections.observableArrayList();
+    ObservableList<Reports> typesByMonthOL = FXCollections.observableArrayList();
+    ObservableList<String> contactOptions = FXCollections.observableArrayList();
+    ObservableList<Customer> listOfCusts = FXCollections.observableArrayList();
+    ObservableList<String> countryOptions = FXCollections.observableArrayList();
+    DateTimeFormatter datetimeDTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    Parent parent;
+    Stage setup;
+    ZoneId localTime = ZoneId.systemDefault();
+    ZoneId utcZoneID = ZoneId.of("UTC");
 
     /** Initializes the controller class.
      * @param url url parameter.
@@ -119,7 +118,7 @@ public class ReportsScreenController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        //Populate customerCountryTable with values
+        //Fill the customerCountryTable with values
         columnID.setCellValueFactory(new PropertyValueFactory<>("CustomerID"));
         columnName.setCellValueFactory(new PropertyValueFactory<>("CustomerName"));
         columnPhone.setCellValueFactory(new PropertyValueFactory<>("CustomerPhone"));
@@ -127,7 +126,7 @@ public class ReportsScreenController implements Initializable {
         columnDivision.setCellValueFactory(new PropertyValueFactory<>("Division"));
         columnPostalCode.setCellValueFactory(new PropertyValueFactory<>("CustomerPostalCode"));
 
-        //assign cell values to Schedule Report
+        //Fill the contact schedule tableview
         contactColumnID.setCellValueFactory(new PropertyValueFactory<>("AppointmentID"));
         contactColumnTitle.setCellValueFactory(new PropertyValueFactory<>("Title"));
         contactColumnType.setCellValueFactory(new PropertyValueFactory<>("Type"));
@@ -136,27 +135,27 @@ public class ReportsScreenController implements Initializable {
         contactColumnEndTime.setCellValueFactory(new PropertyValueFactory<>("End"));
         contactColumnCustID.setCellValueFactory(new PropertyValueFactory<>("CustomerID"));
 
-        //assign cell values to Types By Month
+        //Fill the type tableview
         colTypeMonth.setCellValueFactory(new PropertyValueFactory<>("Month"));
-        colFirstTimePatient.setCellValueFactory(new PropertyValueFactory<>("NewAccount"));
-        colGeneralCheckup.setCellValueFactory(new PropertyValueFactory<>("Consultation"));
-        colBloodWorkVisit.setCellValueFactory(new PropertyValueFactory<>("FollowUp"));
-        colPsychiatricVisit.setCellValueFactory(new PropertyValueFactory<>("CloseAccount"));
+        colFirstTimePatient.setCellValueFactory(new PropertyValueFactory<>("FirstTimeVisit"));
+        colGeneralCheckup.setCellValueFactory(new PropertyValueFactory<>("GeneralCheckup"));
+        colBloodWorkVisit.setCellValueFactory(new PropertyValueFactory<>("BloodWorkVisit"));
+        colPsychiatricVisit.setCellValueFactory(new PropertyValueFactory<>("PsychiatricVisit"));
 
         try {
             fillContactCombobox();
         } catch (Exception ex) {
-            Logger.getLogger(ReportsScreenController.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         try {
             setReportsTypeByMonthTable();
         } catch (Exception ex) {
-            Logger.getLogger(ReportsScreenController.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         try {
             fillCountryComboBox();
         } catch (Exception ex) {
-            Logger.getLogger(ReportsScreenController.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         contactScheduleDisplay.setItems(scheduleOL);
         typesByMonthDisplay.setItems(typesByMonthOL);
@@ -176,137 +175,135 @@ public class ReportsScreenController implements Initializable {
     }
 
     /** This method sets the tableview with appointments by type and month. */
-    private void setReportsTypeByMonthTable() throws SQLException, Exception {
+    private void setReportsTypeByMonthTable() {
         System.out.println("**** Begin Report Type By Month ****");
-        PreparedStatement ps;
+        String sql = "SELECT * FROM appointments";
         try {
-            ps = ConnectDB.makeConnection().prepareStatement(
-                    "SELECT * "
-                            + "FROM appointments");
-
-            System.out.println("PreparedStatement: " + ps);
-            ResultSet rs = ps.executeQuery();
+            PreparedStatement pst = ConnectDB.makeConnection().prepareStatement(sql);
+            ResultSet set = pst.executeQuery();
+            
             System.out.println("Reports By Month query worked");
             typesByMonthOL.clear();
             System.out.println("Entering While Loop");
-            while (rs.next()) {
+            while (set.next()) {
                 System.out.println("Inside While Loop");
-                //get database start time stored as UTC
-                String startUTC = rs.getString("start").substring(0, 19);
-                System.out.println("UTC Start: " + startUTC);
+                
+                String universalStart = set.getString("start").substring(0, 19);
+                System.out.println("UTC Start: " + universalStart);
 
-                //get database end time stored as UTC
-                String endUTC = rs.getString("end").substring(0, 19);
-                System.out.println("UTC End: " + endUTC);
+                String universalEnd = set.getString("end").substring(0, 19);
+                System.out.println("UTC End: " + universalEnd);
 
-                //convert database UTC to LocalDateTime
-                LocalDateTime utcStartDT = LocalDateTime.parse(startUTC, datetimeDTF);
-                LocalDateTime utcEndDT = LocalDateTime.parse(endUTC, datetimeDTF);
+                LocalDateTime universalDateStart = LocalDateTime.parse(universalStart, datetimeDTF);
+                System.out.println("UTC Date Start: " + universalDateStart);
+                
+                LocalDateTime universalDateEnd = LocalDateTime.parse(universalEnd, datetimeDTF);
+                System.out.println("UTC Date End: " + universalDateEnd);
 
-                //convert times UTC zoneId to local zoneId
-                ZonedDateTime localZoneStart = utcStartDT.atZone(utcZoneID).withZoneSameInstant(localTime);
-                ZonedDateTime localZoneEnd = utcEndDT.atZone(utcZoneID).withZoneSameInstant(localTime);
-                System.out.println("localZoneStart: " + localZoneStart);
-                System.out.println("localZoneEnd: " + localZoneEnd);
+                ZonedDateTime userTimeStart = universalDateStart.atZone(utcZoneID).withZoneSameInstant(localTime);
+                System.out.println("userTimeStart: " + userTimeStart);
+                
+                ZonedDateTime userTimeEnd = universalDateEnd.atZone(utcZoneID).withZoneSameInstant(localTime);
+                System.out.println("userTimeEnd: " + userTimeEnd);
+                
+                String userDateStart = userTimeStart.format(datetimeDTF);
+                System.out.println("userDateStart: " + userDateStart);
+                
+                String userDateEnd = userTimeEnd.format(datetimeDTF);
+                System.out.println("userDateEnd: " + userDateEnd);
 
-                //convert ZonedDateTime to a string for insertion into AppointmentsTableView
-                String localStartDT = localZoneStart.format(datetimeDTF);
-                String localEndDT = localZoneEnd.format(datetimeDTF);
-                System.out.println("localStartDT: " + localStartDT);
-                System.out.println("localEndDT: " + localEndDT);
-
-                String monthParse = localStartDT.substring(5, 7);
-                int month = Integer.parseInt(monthParse);
-                System.out.println("Month parsed to Int: " + month);
-                month = month - 1;
-                String type = rs.getString("type");
-                System.out.println("Month: " + month);
+                String termParse = userDateStart.substring(5, 7);
+                int term = Integer.parseInt(termParse);
+                System.out.println("Month parsed to Int: " + term);
+                term = term - 1;
+                String type = set.getString("type");
+                System.out.println("month: " + term);
                 System.out.println("Type: " + type);
 
                 //increment array values of each type for each month
-                if (month == 0) {
+                if (term == 0) {
                     switch (type) {
-                        case "New Account" -> monthTypes[0][0]++;
-                        case "Consultation" -> monthTypes[0][1]++;
-                        case "Follow-Up" -> monthTypes[0][2]++;
-                        case "Close Account" -> monthTypes[0][3]++;
+                        case "First-time Patient" -> dataArray[0][0]++;
+                        case "General Checkup" -> dataArray[0][1]++;
+                        case "Blood Work Visit" -> dataArray[0][2]++;
+                        case "Psychiatric Visit" -> dataArray[0][3]++;
                     }
-                } else if (month == 1) {
+                } else if (term == 1) {
                     switch (type) {
-                        case "New Account" -> monthTypes[1][0]++;
-                        case "Consultation" -> monthTypes[1][1]++;
-                        case "Follow-Up" -> monthTypes[1][2]++;
-                        case "Close Account" -> monthTypes[1][3]++;
+                        case "First-time Patient" -> dataArray[1][0]++;
+                        case "General Checkup" -> dataArray[1][1]++;
+                        case "Blood Work Visit" -> dataArray[1][2]++;
+                        case "Psychiatric Visit" -> dataArray[1][3]++;
                     }
-                } else if (month == 2) {
+                } else if (term == 2) {
                     switch (type) {
-                        case "New Account" -> monthTypes[2][0]++;
-                        case "Consultation" -> monthTypes[2][1]++;
-                        case "Follow-Up" -> monthTypes[2][2]++;
-                        case "Close Account" -> monthTypes[2][3]++;
+                        case "First-time Patient" -> dataArray[2][0]++;
+                        case "General Checkup" -> dataArray[2][1]++;
+                        case "Blood Work Visit" -> dataArray[2][2]++;
+                        case "Psychiatric Visit" -> dataArray[2][3]++;
                     }
-                } else if (month == 3) {
+                } else if (term == 3) {
                     switch (type) {
-                        case "New Account" -> monthTypes[3][0]++;
-                        case "Consultation" -> monthTypes[3][1]++;
-                        case "Follow-Up" -> monthTypes[3][2]++;
-                        case "Close Account" -> monthTypes[3][3]++;
+                        case "First-time Patient" -> dataArray[3][0]++;
+                        case "General Checkup" -> dataArray[3][1]++;
+                        case "Blood Work Visit" -> dataArray[3][2]++;
+                        case "Psychiatric Visit" -> dataArray[3][3]++;
                     }
-                } else if (month == 4) {
+                } else if (term == 4) {
                     switch (type) {
-                        case "New Account" -> monthTypes[4][0]++;
-                        case "Consultation" -> monthTypes[4][1]++;
-                        case "Follow-Up" -> monthTypes[4][2]++;
-                        case "Close Account" -> monthTypes[4][3]++;
+                        case "First-time Patient" -> dataArray[4][0]++;
+                        case "General Checkup" -> dataArray[4][1]++;
+                        case "Blood Work Visit" -> dataArray[4][2]++;
+                        case "Psychiatric Visit" -> dataArray[4][3]++;
                     }
-                } else if (month == 5) {
+                } else if (term == 5) {
                     switch (type) {
-                        case "New Account" -> monthTypes[5][0]++;
-                        case "Consultation" -> monthTypes[5][1]++;
-                        case "Follow-Up" -> monthTypes[5][2]++;
-                        case "Close Account" -> monthTypes[5][3]++;
+                        case "First-time Patient" -> dataArray[5][0]++;
+                        case "General Checkup" -> dataArray[5][1]++;
+                        case "Blood Work Visit" -> dataArray[5][2]++;
+                        case "Psychiatric Visit" -> dataArray[5][3]++;
                     }
-                } else if (month == 6) {
+                } else if (term == 6) {
                     switch (type) {
-                        case "New Account" -> monthTypes[6][0]++;
-                        case "Consultation" -> monthTypes[6][1]++;
-                        case "Follow-Up" -> monthTypes[6][2]++;
-                        case "Close Account" -> monthTypes[6][3]++;
+                        case "First-time Patient" -> dataArray[6][0]++;
+                        case "General Checkup" -> dataArray[6][1]++;
+                        case "Blood Work Visit" -> dataArray[6][2]++;
+                        case "Psychiatric Visit" -> dataArray[6][3]++;
                     }
-                } else if (month == 7) {
+                } else if (term == 7) {
                     switch (type) {
-                        case "New Account" -> monthTypes[7][0]++;
-                        case "Consultation" -> monthTypes[7][1]++;
-                        case "Follow-Up" -> monthTypes[7][2]++;
-                        case "Close Account" -> monthTypes[7][3]++;
+                        case "First-time Patient" -> dataArray[7][0]++;
+                        case "General Checkup" -> dataArray[7][1]++;
+                        case "Blood Work Visit" -> dataArray[7][2]++;
+                        case "Psychiatric Visit" -> dataArray[7][3]++;
                     }
-                } else if (month == 8) {
+                } else if (term == 8) {
                     switch (type) {
-                        case "New Account" -> monthTypes[8][0]++;
-                        case "Consultation" -> monthTypes[8][1]++;
-                        case "Follow-Up" -> monthTypes[8][2]++;
-                        case "Close Account" -> monthTypes[8][3]++;
+                        case "First-time Patient" -> dataArray[8][0]++;
+                        case "General Checkup" -> dataArray[8][1]++;
+                        case "Blood Work Visit" -> dataArray[8][2]++;
+                        case "Psychiatric Visit" -> dataArray[8][3]++;
                     }
-                } else if (month == 9) {
+                } else if (term == 9) {
                     switch (type) {
-                        case "New Account" -> monthTypes[9][0]++;
-                        case "Consultation" -> monthTypes[9][1]++;
-                        case "Follow-Up" -> monthTypes[9][2]++;
-                        case "Close Account" -> monthTypes[9][3]++;
+                        case "First-time Patient" -> dataArray[9][0]++;
+                        case "General Checkup" -> dataArray[9][1]++;
+                        case "Blood Work Visit" -> dataArray[9][2]++;
+                        case "Psychiatric Visit" -> dataArray[9][3]++;
                     }
-                } else if (month == 10) {
+                } else if (term == 10) {
                     switch (type) {
-                        case "New Account" -> monthTypes[10][0]++;
-                        case "Consultation" -> monthTypes[10][1]++;
-                        case "Follow-Up" -> monthTypes[10][2]++;
-                        case "Close Account" -> monthTypes[10][3]++;
+                        case "First-time Patient" -> dataArray[10][0]++;
+                        case "General Checkup" -> dataArray[10][1]++;
+                        case "Blood Work Visit" -> dataArray[10][2]++;
+                        case "Psychiatric Visit" -> dataArray[10][3]++;
                     }
-                } else if (month == 11) {
+                } else if (term == 11) {
                     switch (type) {
-                        case "New Account" -> monthTypes[11][0]++;
-                        case "Consultation" -> monthTypes[11][1]++;
-                        case "Follow-Up" -> monthTypes[11][2]++;
-                        case "Close Account" -> monthTypes[11][3]++;
+                        case "First-time Patient" -> dataArray[11][0]++;
+                        case "General Checkup" -> dataArray[11][1]++;
+                        case "Blood Work Visit" -> dataArray[11][2]++;
+                        case "Psychiatric Visit" -> dataArray[11][3]++;
                     }
                 }
             }
@@ -318,64 +315,64 @@ public class ReportsScreenController implements Initializable {
         }
         for (int i = 0; i < 12; i++) {
             //assign variables for insertion into typesByMonthOL
-            int newAccount = monthTypes[i][0];
-            int consultation = monthTypes[i][1];
-            int followUp = monthTypes[i][2];
-            int closeAccount = monthTypes[i][3];
+            int firstTimePatient = dataArray[i][0];
+            int generalCheckup = dataArray[i][1];
+            int bloodWorkVisit = dataArray[i][2];
+            int psychiatricVisit = dataArray[i][3];
 
             //prints variable contents to terminal for troubleshooting
-            System.out.println("newAccount: " + newAccount);
-            System.out.println("consultation: " + consultation);
-            System.out.println("followUp: " + followUp);
-            System.out.println("closeAccount: " + closeAccount);
+            System.out.println("firstTimePatient: " + firstTimePatient);
+            System.out.println("generalCheckup: " + generalCheckup);
+            System.out.println("bloodWorkVisit: " + bloodWorkVisit);
+            System.out.println("psychiatricVisit: " + psychiatricVisit);
 
-            typesByMonthOL.add(new Reports(getAbbreviatedMonth(i), newAccount, consultation, followUp, closeAccount));
+            typesByMonthOL.add(new Reports(getTermTrimmed(i), firstTimePatient, generalCheckup, bloodWorkVisit, psychiatricVisit));
         }
         System.out.println("**** End Report Type By Month ****");
     }
 
     /** This method converts two digit month code into abbreviated month string.
-     * @param month Numerical representation of month.
+     * @param term Numerical representation of month.
      * */
-    private String getAbbreviatedMonth(int month) {
-        String abbreviatedMonth = null;
-        if (month == 0) {
-            abbreviatedMonth = "JAN";
+    private String getTermTrimmed(int term) {
+        String trimmedTerm = null;
+        if (term == 0) {
+            trimmedTerm = "JAN";
         }
-        if (month == 1) {
-            abbreviatedMonth = "FEB";
+        if (term == 1) {
+            trimmedTerm = "FEB";
         }
-        if (month == 2) {
-            abbreviatedMonth = "MAR";
+        if (term == 2) {
+            trimmedTerm = "MAR";
         }
-        if (month == 3) {
-            abbreviatedMonth = "APR";
+        if (term == 3) {
+            trimmedTerm = "APR";
         }
-        if (month == 4) {
-            abbreviatedMonth = "MAY";
+        if (term == 4) {
+            trimmedTerm = "MAY";
         }
-        if (month == 5) {
-            abbreviatedMonth = "JUN";
+        if (term == 5) {
+            trimmedTerm = "JUN";
         }
-        if (month == 6) {
-            abbreviatedMonth = "JUL";
+        if (term == 6) {
+            trimmedTerm = "JUL";
         }
-        if (month == 7) {
-            abbreviatedMonth = "AUG";
+        if (term == 7) {
+            trimmedTerm = "AUG";
         }
-        if (month == 8) {
-            abbreviatedMonth = "SEP";
+        if (term == 8) {
+            trimmedTerm = "SEP";
         }
-        if (month == 9) {
-            abbreviatedMonth = "OCT";
+        if (term == 9) {
+            trimmedTerm = "OCT";
         }
-        if (month == 10) {
-            abbreviatedMonth = "NOV";
+        if (term == 10) {
+            trimmedTerm = "NOV";
         }
-        if (month == 11) {
-            abbreviatedMonth = "DEC";
+        if (term == 11) {
+            trimmedTerm = "DEC";
         }
-        return abbreviatedMonth;
+        return trimmedTerm;
     }
 
     /** This method fills the combobox with names of contacts. */
@@ -462,24 +459,24 @@ public class ReportsScreenController implements Initializable {
                 System.out.println(contactID);
 
                 //get database start time stored as UTC
-                String startUTC = rs.getString("start").substring(0, 19);
-                System.out.println(startUTC);
+                String universalStart = rs.getString("start").substring(0, 19);
+                System.out.println(universalStart);
 
                 //get database end time stored as UTC
-                String endUTC = rs.getString("end").substring(0, 19);
-                System.out.println(endUTC);
+                String universalEnd = rs.getString("end").substring(0, 19);
+                System.out.println(universalEnd);
 
                 //convert database UTC to LocalDateTime
-                LocalDateTime utcStartDT = LocalDateTime.parse(startUTC, datetimeDTF);
-                LocalDateTime utcEndDT = LocalDateTime.parse(endUTC, datetimeDTF);
+                LocalDateTime universalDateStart = LocalDateTime.parse(universalStart, datetimeDTF);
+                LocalDateTime universalDateEnd = LocalDateTime.parse(universalEnd, datetimeDTF);
 
                 //convert times UTC zoneId to local zoneId
-                ZonedDateTime localZoneStart = utcStartDT.atZone(utcZoneID).withZoneSameInstant(localTime);
-                ZonedDateTime localZoneEnd = utcEndDT.atZone(utcZoneID).withZoneSameInstant(localTime);
+                ZonedDateTime userTimeStart = universalDateStart.atZone(utcZoneID).withZoneSameInstant(localTime);
+                ZonedDateTime userTimeEnd = universalDateEnd.atZone(utcZoneID).withZoneSameInstant(localTime);
 
                 //convert ZonedDateTime to a string for insertion into AppointmentsTableView
-                String localStartDT = localZoneStart.format(datetimeDTF);
-                String localEndDT = localZoneEnd.format(datetimeDTF);
+                String userDateStart = userTimeStart.format(datetimeDTF);
+                String userDateEnd = userTimeEnd.format(datetimeDTF);
 
                 //get title from appointment
                 String title = rs.getString("title");
@@ -489,7 +486,7 @@ public class ReportsScreenController implements Initializable {
                 String type = rs.getString("type");
                 System.out.println("Type: " + type);
 
-                scheduleOL.add(new Appointment(appointmentID, customerID, title, description, type, localStartDT, localEndDT));
+                scheduleOL.add(new Appointment(appointmentID, customerID, title, description, type, userDateStart, userDateEnd));
                 System.out.println("Schedule add: " + scheduleOL);
             }
 

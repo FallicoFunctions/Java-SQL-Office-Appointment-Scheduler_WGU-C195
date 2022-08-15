@@ -7,10 +7,10 @@ package model;
 public class Reports {
 
     private String month;
-    private int newAccount;
-    private int consultation;
-    private int followUp;
-    private int closeAccount;
+    private int firstTimeVisit;
+    private int generalCheckup;
+    private int bloodWorkVisit;
+    private int psychiatricVisit;
     private int email;
     private int phone;
     private int inperson;
@@ -22,12 +22,12 @@ public class Reports {
         setTypesArray(typesArray);
     }
 
-    public Reports(String month, int newAccount, int consultation, int followUp, int closeAccount){
+    public Reports(String month, int firstTimeVisit, int generalCheckup, int bloodWorkVisit, int psychiatricVisit){
         setMonth(month);
-        setNewAccount(newAccount);
-        setConsultation(consultation);
-        setFollowUp(followUp);
-        setCloseAccount(closeAccount);
+        setFirstTimeVisit(firstTimeVisit);
+        setGeneralCheckup(generalCheckup);
+        setBloodWorkVisit(bloodWorkVisit);
+        setPsychiatricVisit(psychiatricVisit);
     }
 
     public Reports(String month, int email, int phone, int inperson){
@@ -46,20 +46,20 @@ public class Reports {
         return this.typesArray;
     }
 
-    public int getNewAccount(){
-        return this.newAccount;
+    public int getFirstTimeVisit(){
+        return this.firstTimeVisit;
     }
 
-    public int getConsultation(){
-        return this.consultation;
+    public int getGeneralCheckup(){
+        return this.generalCheckup;
     }
 
-    public int getFollowUp(){
-        return this.followUp;
+    public int getBloodWorkVisit(){
+        return this.bloodWorkVisit;
     }
 
-    public int getCloseAccount(){
-        return this.closeAccount;
+    public int getPsychiatricVisit(){
+        return this.psychiatricVisit;
     }
 
     public int getEmail(){
@@ -79,20 +79,20 @@ public class Reports {
         this.month = month;
     }
 
-    private void setNewAccount(int newAccount){
-        this.newAccount = newAccount;
+    private void setFirstTimeVisit(int firstTimeVisit){
+        this.firstTimeVisit = firstTimeVisit;
     }
 
-    private void setConsultation(int consultation){
-        this.consultation = consultation;
+    private void setGeneralCheckup(int generalCheckup){
+        this.generalCheckup = generalCheckup;
     }
 
-    private void setFollowUp(int followUp){
-        this.followUp = followUp;
+    private void setBloodWorkVisit(int bloodWorkVisit){
+        this.bloodWorkVisit = bloodWorkVisit;
     }
 
-    private void setCloseAccount(int closeAccount){
-        this.closeAccount = closeAccount;
+    private void setPsychiatricVisit(int psychiatricVisit){
+        this.psychiatricVisit = psychiatricVisit;
     }
 
     private void setEmail(int email){

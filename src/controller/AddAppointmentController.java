@@ -47,12 +47,6 @@ import util.ConnectDB;
  * @author Nicholas Fallico
  */
 public class AddAppointmentController implements Initializable {
-    ResourceBundle rb = ResourceBundle.getBundle("properties.login", Locale.getDefault());
-    ZoneId localTime = ZoneId.systemDefault();
-    Customer chosenCust = new Customer();
-    Appointment chosenMeeting;
-    Parent parent;
-    Stage setup;
     @FXML
     public Button buttonToCancel;
     @FXML
@@ -87,12 +81,20 @@ public class AddAppointmentController implements Initializable {
     public TableColumn<Customer, Integer> colCustID;
     @FXML
     public TableColumn<Customer, String> colCustName;
+
+    //Declare variables and lists
     DateTimeFormatter stageFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     DateTimeFormatter dateStageFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     ObservableList<Customer> listOfCusts = FXCollections.observableArrayList();
     ObservableList<String> listOfBeginningMeetingTimes = FXCollections.observableArrayList();
     ObservableList<String> listOfEndingMeetingTimes = FXCollections.observableArrayList();
     ObservableList<String> contactList = FXCollections.observableArrayList();
+    ResourceBundle rb = ResourceBundle.getBundle("properties.login", Locale.getDefault());
+    ZoneId localTime = ZoneId.systemDefault();
+    Customer chosenCust = new Customer();
+    Appointment chosenMeeting;
+    Parent parent;
+    Stage setup;
 
     /** Initializes the controller class.
      * @param url The URL parameter.
@@ -331,26 +333,50 @@ public class AddAppointmentController implements Initializable {
      * */
     public boolean meetingValidator() {
         System.out.println("****** Begin Appointment Validation *****");
-        Customer customer = custListDisplay.getSelectionModel().getSelectedItem();
+        Customer current = custListDisplay.getSelectionModel().getSelectedItem();
+
         String title = titleEntryBox.getText();
+        System.out.println("title: " + title);
+
         String description = descriptionEntryBox.getText();
-        String type = comboBoxType.getValue();
-        String contact = comboBoxContact.getValue();
+        System.out.println("description: " + description);
+
+        String meetingType = comboBoxType.getValue();
+        System.out.println("meetingType: " + meetingType);
+
+        String nameOfContact = comboBoxContact.getValue();
+        System.out.println("nameOfContact: " + nameOfContact);
+
         String location = comboBoxLocation.getValue();
+        System.out.println("nameOfContact: " + nameOfContact);
+
         LocalDate userMeetingDay = dateStartPicker.getValue();
+        System.out.println("meeting day: " + userMeetingDay);
+
         LocalTime meetingBeginning = LocalTime.parse(comboBoxStart.getSelectionModel().getSelectedItem(), stageFormatter);
+        System.out.println("meeting start: " + meetingBeginning);
+
         LocalTime meetingEnding = LocalTime.parse(comboBoxEnd.getSelectionModel().getSelectedItem(), stageFormatter);
+        System.out.println("meeting end: " + meetingEnding);
+
         LocalDateTime dateOfMeetingStart = LocalDateTime.of(userMeetingDay, meetingBeginning);
+        System.out.println("date of meeting: " + dateOfMeetingStart);
+
         LocalDateTime dateOfMeetingEnd = LocalDateTime.of(userMeetingDay, meetingEnding);
+        System.out.println("date of meeting: " + dateOfMeetingEnd);
+
         ZonedDateTime universalStart = dateOfMeetingStart.atZone(localTime).withZoneSameInstant(ZoneId.of("UTC"));
+        System.out.println("UTC meeting start: " + universalStart);
+
         ZonedDateTime universalEnd = dateOfMeetingEnd.atZone(localTime).withZoneSameInstant(ZoneId.of("UTC"));
+        System.out.println("UTC meeting end: " + universalEnd);
 
         //The below if-statements verify if the appointment entry fields are blank
         String isValid = "";
-        if (type == null) {
+        if (meetingType == null) {
             isValid += rb.getString("appointmenttype") + System.lineSeparator();
         }
-        if (customer == null) {
+        if (current == null) {
             isValid += rb.getString("customerselect") + System.lineSeparator();
         }
         if (title.length() == 0) {
@@ -359,7 +385,7 @@ public class AddAppointmentController implements Initializable {
         if (description.length() == 0) {
             isValid += rb.getString("appointmentdescription") + System.lineSeparator();
         }
-        if (contact == null) {
+        if (nameOfContact == null) {
             isValid += rb.getString("appointmentcontact") + System.lineSeparator();
         }
         if (location == null) {

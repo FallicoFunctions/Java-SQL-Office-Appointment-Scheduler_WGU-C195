@@ -5,7 +5,6 @@ import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -74,7 +73,8 @@ public class CustomerScreenController implements Initializable {
     public TextField phoneEntryBox;
     @FXML
     public Button buttonToGoBack;
-    
+
+    //Declare Variables and lists
     ObservableList<Customer> listOfCusts = FXCollections.observableArrayList();
     ObservableList<String> firstLevelOptions = FXCollections.observableArrayList();
     ObservableList<String> listOfCountries = FXCollections.observableArrayList();
@@ -166,7 +166,7 @@ public class CustomerScreenController implements Initializable {
      * */
     public void fillFirstLevelBox(String countryName) {
         System.out.println(countryName);
-        comboBoxFirstLevel.getItems().clear();
+        //comboBoxFirstLevel.getItems().clear();
         try {
             PreparedStatement sql = ConnectDB.makeConnection().prepareStatement("SELECT first_level_divisions.* FROM first_level_divisions, countries WHERE first_level_divisions.Country_ID = countries.country_ID AND countries.country = ?");
             sql.setString(1, countryName);
@@ -329,12 +329,12 @@ public class CustomerScreenController implements Initializable {
      * @return Returns False or True based on validity checks.
      * */
     public boolean validCustomer() {
-        String nameOfCust = custNameEntryBox.getText().trim();
-        String custAddress = custAddressEntryBox.getText().trim();
-        String division = comboBoxFirstLevel.getValue().trim();
-        String custCountry = comboBoxCounty.getValue().trim();
-        String custZipCode = zipCodeEntryBox.getText().trim();
-        String custTelephone = phoneEntryBox.getText().trim();
+        String nameOfCust = custNameEntryBox.getText();
+        String custAddress = custAddressEntryBox.getText();
+        String division = comboBoxFirstLevel.getValue();
+        String custCountry = comboBoxCounty.getValue();
+        String custZipCode = zipCodeEntryBox.getText();
+        String custTelephone = phoneEntryBox.getText();
 
         //The below if-statements verify if the customer entry fields are blank
         String isValid = "";
@@ -420,10 +420,13 @@ public class CustomerScreenController implements Initializable {
         Customer current = displayCustomerList.getSelectionModel().getSelectedItem();
         if (current != null) {
             int custId = current.getCustomerID();
+
             addUpdateLabel.setText("Modify Existing Customer");
             reviseCust = true;
             newCust = false;
+
             turnOnfEntryBoxes();
+
             PreparedStatement sql = ConnectDB.makeConnection().prepareStatement("SELECT customers.customer_Id, customer_Name, phone, address, Postal_Code, first_level_divisions.Division, first_level_divisions.Division_ID, countries.Country FROM customers, first_level_divisions, countries WHERE customers.customer_ID = ? AND customers.Division_ID = first_level_divisions.Division_ID AND first_level_divisions.Country_ID = countries.Country_ID");
             sql.setInt(1, custId); //-----------not sure------
             ResultSet set = sql.executeQuery();
@@ -468,12 +471,14 @@ public class CustomerScreenController implements Initializable {
      * @param event A mouse click of the Add button.
      * */
     @FXML
-    public void buttonToAddHandler(ActionEvent event) throws SQLException {
+    public void buttonToAddHandler(ActionEvent event) {
         emptyEntryBoxes();
+
         addUpdateLabel.setText("Create New Customer");
         custIDEntryBox.setText("Auto Generated");
         newCust = true;
         reviseCust = false;
+
         turnOnfEntryBoxes();
     }
 
@@ -485,11 +490,11 @@ public class CustomerScreenController implements Initializable {
     public void buttonToDeleteHandler(ActionEvent event) throws Exception {
         if (displayCustomerList.getSelectionModel().getSelectedItem() != null) {
             Customer current = displayCustomerList.getSelectionModel().getSelectedItem();
-            String custName = current.getCustomerName();
-            String custPhone = current.getCustomerPhone();
-            System.out.println("Name: " + custName);
-            System.out.println("Phone: " + custPhone);
             System.out.println("CustomerID : " + current.getCustomerID());
+            String custName = current.getCustomerName();
+            System.out.println("Name: " + custName);
+            String custPhone = current.getCustomerPhone();
+            System.out.println("Phone: " + custPhone);
 
             //Alert signal
             Alert signal = new Alert(Alert.AlertType.CONFIRMATION);
@@ -523,5 +528,31 @@ public class CustomerScreenController implements Initializable {
         Scene scene = new Scene(parent);
         setup.setScene(scene);
         setup.show();
+    }
+
+    @FXML
+    public void comboBoxFirstLevelHandler(ActionEvent actionEvent) {
+        /*
+        if(comboBoxCounty.getValue() != null) {
+            comboBoxFirstLevel.getSelectionModel().selectedItemProperty().addListener(
+                    (observable, oldValue, newValue) -> {
+                        try {
+                            fillFirstLevelBox(comboBoxCounty.getValue());
+                        } catch (Exception ex) {
+                            System.out.println("Customer Listener had an error!");
+                            ex.printStackTrace();
+                        }
+                    });
+        } else {
+
+            /*
+            //Alert signal
+            Alert signal = new Alert(Alert.AlertType.ERROR);
+            signal.setTitle(rb.getString("nocountry"));
+            signal.setHeaderText(rb.getString("countryerror"));
+            signal.setContentText(rb.getString("clickokay"));
+            Optional<ButtonType> set = signal.showAndWait();
+
+        } */
     }
 }
