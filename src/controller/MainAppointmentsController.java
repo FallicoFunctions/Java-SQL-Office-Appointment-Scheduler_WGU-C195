@@ -86,7 +86,7 @@ public class  MainAppointmentsController implements Initializable {
     ObservableList<Appointment> appointmentsOL = FXCollections.observableArrayList();
     ResourceBundle rb = ResourceBundle.getBundle("properties.login", Locale.getDefault());
     DateTimeFormatter datetimeDTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    ZoneId localTime = ZoneId.systemDefault();
+    ZoneId userTime = ZoneId.systemDefault();
     ZoneId utcZoneID = ZoneId.of("UTC");
 
     /** Initializes the controller class.
@@ -147,9 +147,9 @@ public class  MainAppointmentsController implements Initializable {
                 System.out.println("universalDateStart: " + universalDateStart);
                 LocalDateTime universalDateEnd = LocalDateTime.parse(universalEnd, datetimeDTF);
                 System.out.println("universalDateEnd: " + universalDateEnd);
-                ZonedDateTime userTimeStart = universalDateStart.atZone(utcZoneID).withZoneSameInstant(localTime);
+                ZonedDateTime userTimeStart = universalDateStart.atZone(utcZoneID).withZoneSameInstant(userTime);
                 System.out.println("userTimeStart: " + userTimeStart);
-                ZonedDateTime userTimeEnd = universalDateEnd.atZone(utcZoneID).withZoneSameInstant(localTime);
+                ZonedDateTime userTimeEnd = universalDateEnd.atZone(utcZoneID).withZoneSameInstant(userTime);
                 System.out.println("userTimeEnd: " + userTimeEnd);
                 String userDateStart = userTimeStart.format(datetimeDTF);
                 System.out.println("userDateStart: " + userDateStart);

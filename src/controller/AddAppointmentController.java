@@ -90,7 +90,7 @@ public class AddAppointmentController implements Initializable {
     ObservableList<String> listOfEndingMeetingTimes = FXCollections.observableArrayList();
     ObservableList<String> contactList = FXCollections.observableArrayList();
     ResourceBundle rb = ResourceBundle.getBundle("properties.login", Locale.getDefault());
-    ZoneId localTime = ZoneId.systemDefault();
+    ZoneId userTime = ZoneId.systemDefault();
     Customer chosenCust = new Customer();
     Appointment chosenMeeting;
     Parent parent;
@@ -365,10 +365,10 @@ public class AddAppointmentController implements Initializable {
         LocalDateTime dateOfMeetingEnd = LocalDateTime.of(userMeetingDay, meetingEnding);
         System.out.println("date of meeting: " + dateOfMeetingEnd);
 
-        ZonedDateTime universalStart = dateOfMeetingStart.atZone(localTime).withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime universalStart = dateOfMeetingStart.atZone(userTime).withZoneSameInstant(ZoneId.of("UTC"));
         System.out.println("UTC meeting start: " + universalStart);
 
-        ZonedDateTime universalEnd = dateOfMeetingEnd.atZone(localTime).withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime universalEnd = dateOfMeetingEnd.atZone(userTime).withZoneSameInstant(ZoneId.of("UTC"));
         System.out.println("UTC meeting end: " + universalEnd);
 
         //The below if-statements verify if the appointment entry fields are blank
@@ -470,8 +470,8 @@ public class AddAppointmentController implements Initializable {
         LocalDateTime dateOfMeetingEnd = LocalDateTime.of(userMeetingDay, userMeetingEnding);
         System.out.println("localStartDT: " + dateOfMeetingStart);
         System.out.println("localEndDT: " + dateOfMeetingEnd);
-        ZonedDateTime universalStart = dateOfMeetingStart.atZone(localTime).withZoneSameInstant(ZoneId.of("UTC"));
-        ZonedDateTime universalEnd = dateOfMeetingEnd.atZone(localTime).withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime universalStart = dateOfMeetingStart.atZone(userTime).withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime universalEnd = dateOfMeetingEnd.atZone(userTime).withZoneSameInstant(ZoneId.of("UTC"));
         System.out.println("universalStart: " + universalStart);
         System.out.println("universalEnd: " + universalEnd);
         Timestamp sqlStartTS = Timestamp.valueOf(universalStart.toLocalDateTime());
@@ -528,8 +528,8 @@ public class AddAppointmentController implements Initializable {
         LocalDateTime dateOfMeetingEnd = LocalDateTime.of(userMeetingDay, userMeetingEnding);
         System.out.println("localStartDT: " + dateOfMeetingStart);
         System.out.println("localEndDT: " + dateOfMeetingEnd);
-        ZonedDateTime universalStart = dateOfMeetingStart.atZone(localTime).withZoneSameInstant(ZoneId.of("UTC"));
-        ZonedDateTime universalEnd = dateOfMeetingEnd.atZone(localTime).withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime universalStart = dateOfMeetingStart.atZone(userTime).withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime universalEnd = dateOfMeetingEnd.atZone(userTime).withZoneSameInstant(ZoneId.of("UTC"));
         System.out.println("universalStart: " + universalStart);
         System.out.println("universalEnd: " + universalEnd);
         Timestamp sqlStartTS = Timestamp.valueOf(universalStart.toLocalDateTime());

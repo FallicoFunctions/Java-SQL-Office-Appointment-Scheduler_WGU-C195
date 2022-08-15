@@ -53,8 +53,8 @@ public class LoginController implements Initializable {
     @FXML
     public Label titleLabel;
     ObservableList<Appointment> upcomingAppList = FXCollections.observableArrayList();
-    public DateTimeFormatter formatterVariable = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-    public ZoneId localTime = ZoneId.systemDefault();
+    DateTimeFormatter formatterVariable = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+    ZoneId userTime = ZoneId.systemDefault();
     ResourceBundle rb = ResourceBundle.getBundle("properties.login", Locale.getDefault());
 
     /** Initializes the controller class.
@@ -134,10 +134,10 @@ public class LoginController implements Initializable {
             while (set.next()) {
                 Timestamp currentStart = set.getTimestamp("start");
                 ZonedDateTime universalStart = currentStart.toLocalDateTime().atZone(ZoneId.of("UTC"));
-                ZonedDateTime userTimeStart = universalStart.withZoneSameInstant(localTime);
+                ZonedDateTime userTimeStart = universalStart.withZoneSameInstant(userTime);
                 Timestamp currentEnd = set.getTimestamp("end");
                 ZonedDateTime universalEnd = currentEnd.toLocalDateTime().atZone(ZoneId.of("UTC"));
-                ZonedDateTime userTimeEnd = universalEnd.withZoneSameInstant(localTime);
+                ZonedDateTime userTimeEnd = universalEnd.withZoneSameInstant(userTime);
                 int appNumber = set.getInt("appointment_Id");
                 String appTitle = set.getString("title");
                 String description = set.getString("description");

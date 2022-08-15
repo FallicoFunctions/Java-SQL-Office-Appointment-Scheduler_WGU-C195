@@ -11,8 +11,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -84,7 +82,7 @@ public class ReportsScreenController implements Initializable {
     @FXML
     public TableColumn columnDivision;
 
-    //This array will store data for the report screen and display data in a column by row view
+    //This will store data for the report screen and display data in a column by row view
     public int dataArray[][] = new int[][]{
             {0, 0, 0, 0},
             {0, 0, 0, 0},
@@ -109,7 +107,7 @@ public class ReportsScreenController implements Initializable {
     DateTimeFormatter datetimeDTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     Parent parent;
     Stage setup;
-    ZoneId localTime = ZoneId.systemDefault();
+    ZoneId userTime = ZoneId.systemDefault();
     ZoneId utcZoneID = ZoneId.of("UTC");
 
     /** Initializes the controller class.
@@ -148,7 +146,7 @@ public class ReportsScreenController implements Initializable {
             ex.printStackTrace();
         }
         try {
-            setReportsTypeByMonthTable();
+            fillTypeTableviewMonth();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -175,7 +173,7 @@ public class ReportsScreenController implements Initializable {
     }
 
     /** This method sets the tableview with appointments by type and month. */
-    private void setReportsTypeByMonthTable() {
+    private void fillTypeTableviewMonth() {
         System.out.println("**** Begin Report Type By Month ****");
         String sql = "SELECT * FROM appointments";
         try {
@@ -200,10 +198,10 @@ public class ReportsScreenController implements Initializable {
                 LocalDateTime universalDateEnd = LocalDateTime.parse(universalEnd, datetimeDTF);
                 System.out.println("UTC Date End: " + universalDateEnd);
 
-                ZonedDateTime userTimeStart = universalDateStart.atZone(utcZoneID).withZoneSameInstant(localTime);
+                ZonedDateTime userTimeStart = universalDateStart.atZone(utcZoneID).withZoneSameInstant(userTime);
                 System.out.println("userTimeStart: " + userTimeStart);
                 
-                ZonedDateTime userTimeEnd = universalDateEnd.atZone(utcZoneID).withZoneSameInstant(localTime);
+                ZonedDateTime userTimeEnd = universalDateEnd.atZone(utcZoneID).withZoneSameInstant(userTime);
                 System.out.println("userTimeEnd: " + userTimeEnd);
                 
                 String userDateStart = userTimeStart.format(datetimeDTF);
@@ -220,7 +218,7 @@ public class ReportsScreenController implements Initializable {
                 System.out.println("month: " + term);
                 System.out.println("Type: " + type);
 
-                //increment array values of each type for each month
+                //Add type values to the tableview
                 if (term == 0) {
                     switch (type) {
                         case "First-time Patient" -> dataArray[0][0]++;
@@ -228,77 +226,88 @@ public class ReportsScreenController implements Initializable {
                         case "Blood Work Visit" -> dataArray[0][2]++;
                         case "Psychiatric Visit" -> dataArray[0][3]++;
                     }
-                } else if (term == 1) {
+                }
+                if (term == 1) {
                     switch (type) {
                         case "First-time Patient" -> dataArray[1][0]++;
                         case "General Checkup" -> dataArray[1][1]++;
                         case "Blood Work Visit" -> dataArray[1][2]++;
                         case "Psychiatric Visit" -> dataArray[1][3]++;
                     }
-                } else if (term == 2) {
+                }
+                if (term == 2) {
                     switch (type) {
                         case "First-time Patient" -> dataArray[2][0]++;
                         case "General Checkup" -> dataArray[2][1]++;
                         case "Blood Work Visit" -> dataArray[2][2]++;
                         case "Psychiatric Visit" -> dataArray[2][3]++;
                     }
-                } else if (term == 3) {
+                }
+                if (term == 3) {
                     switch (type) {
                         case "First-time Patient" -> dataArray[3][0]++;
                         case "General Checkup" -> dataArray[3][1]++;
                         case "Blood Work Visit" -> dataArray[3][2]++;
                         case "Psychiatric Visit" -> dataArray[3][3]++;
                     }
-                } else if (term == 4) {
+                }
+                if (term == 4) {
                     switch (type) {
                         case "First-time Patient" -> dataArray[4][0]++;
                         case "General Checkup" -> dataArray[4][1]++;
                         case "Blood Work Visit" -> dataArray[4][2]++;
                         case "Psychiatric Visit" -> dataArray[4][3]++;
                     }
-                } else if (term == 5) {
+                }
+                if (term == 5) {
                     switch (type) {
                         case "First-time Patient" -> dataArray[5][0]++;
                         case "General Checkup" -> dataArray[5][1]++;
                         case "Blood Work Visit" -> dataArray[5][2]++;
                         case "Psychiatric Visit" -> dataArray[5][3]++;
                     }
-                } else if (term == 6) {
+                }
+                if (term == 6) {
                     switch (type) {
                         case "First-time Patient" -> dataArray[6][0]++;
                         case "General Checkup" -> dataArray[6][1]++;
                         case "Blood Work Visit" -> dataArray[6][2]++;
                         case "Psychiatric Visit" -> dataArray[6][3]++;
                     }
-                } else if (term == 7) {
+                }
+                if (term == 7) {
                     switch (type) {
                         case "First-time Patient" -> dataArray[7][0]++;
                         case "General Checkup" -> dataArray[7][1]++;
                         case "Blood Work Visit" -> dataArray[7][2]++;
                         case "Psychiatric Visit" -> dataArray[7][3]++;
                     }
-                } else if (term == 8) {
+                }
+                if (term == 8) {
                     switch (type) {
                         case "First-time Patient" -> dataArray[8][0]++;
                         case "General Checkup" -> dataArray[8][1]++;
                         case "Blood Work Visit" -> dataArray[8][2]++;
                         case "Psychiatric Visit" -> dataArray[8][3]++;
                     }
-                } else if (term == 9) {
+                }
+                if (term == 9) {
                     switch (type) {
                         case "First-time Patient" -> dataArray[9][0]++;
                         case "General Checkup" -> dataArray[9][1]++;
                         case "Blood Work Visit" -> dataArray[9][2]++;
                         case "Psychiatric Visit" -> dataArray[9][3]++;
                     }
-                } else if (term == 10) {
+                }
+                if (term == 10) {
                     switch (type) {
                         case "First-time Patient" -> dataArray[10][0]++;
                         case "General Checkup" -> dataArray[10][1]++;
                         case "Blood Work Visit" -> dataArray[10][2]++;
                         case "Psychiatric Visit" -> dataArray[10][3]++;
                     }
-                } else if (term == 11) {
+                }
+                if (term == 11) {
                     switch (type) {
                         case "First-time Patient" -> dataArray[11][0]++;
                         case "General Checkup" -> dataArray[11][1]++;
@@ -313,25 +322,27 @@ public class ReportsScreenController implements Initializable {
         } catch (Exception e) {
             System.out.println("Something other than SQL has caused an error!");
         }
-        for (int i = 0; i < 12; i++) {
-            //assign variables for insertion into typesByMonthOL
-            int firstTimePatient = dataArray[i][0];
-            int generalCheckup = dataArray[i][1];
-            int bloodWorkVisit = dataArray[i][2];
-            int psychiatricVisit = dataArray[i][3];
 
-            //prints variable contents to terminal for troubleshooting
+        //Load type count into integers for the array
+        for (int j = 0; j < 12; j++) {
+            int firstTimePatient = dataArray[j][0];
             System.out.println("firstTimePatient: " + firstTimePatient);
+
+            int generalCheckup = dataArray[j][1];
             System.out.println("generalCheckup: " + generalCheckup);
+
+            int bloodWorkVisit = dataArray[j][2];
             System.out.println("bloodWorkVisit: " + bloodWorkVisit);
+
+            int psychiatricVisit = dataArray[j][3];
             System.out.println("psychiatricVisit: " + psychiatricVisit);
 
-            typesByMonthOL.add(new Reports(getTermTrimmed(i), firstTimePatient, generalCheckup, bloodWorkVisit, psychiatricVisit));
+            typesByMonthOL.add(new Reports(getTermTrimmed(j), firstTimePatient, generalCheckup, bloodWorkVisit, psychiatricVisit));
         }
         System.out.println("**** End Report Type By Month ****");
     }
 
-    /** This method converts two digit month code into abbreviated month string.
+    /** This method intakes a month numeral and outputs the month name.
      * @param term Numerical representation of month.
      * */
     private String getTermTrimmed(int term) {
@@ -378,24 +389,17 @@ public class ReportsScreenController implements Initializable {
     /** This method fills the combobox with names of contacts. */
     public void fillContactCombobox () {
         try {
-            //create statement object
             Statement stmt = ConnectDB.makeConnection().createStatement();
-
-            //Write SQL statement (columns from two tables)
             String sqlStatement = "SELECT contact_name FROM contacts";
-
-            //execute statement and create resultset object
-            ResultSet result = stmt.executeQuery(sqlStatement);
-
-            //get all records from resultset obj
-            while (result.next()) {
+            ResultSet set = stmt.executeQuery(sqlStatement);
+            while (set.next()) {
                 Appointment app = new Appointment();
-                app.setContact(result.getString("contact_name"));
+                app.setContact(set.getString("contact_name"));
                 contactOptions.add(app.getContact());
                 contactComboBox.setItems(contactOptions);
             }
             stmt.close();
-            result.close();
+            set.close();
         } catch (SQLException throwables){
             throwables.printStackTrace();
         }
@@ -407,22 +411,17 @@ public class ReportsScreenController implements Initializable {
      * */
     private int getContactID(String contact_name) {
         int contactID = -1;
-        //Write SQL statement to select contact ID from Contact name
+
         String sqlStatement = "SELECT contact_Id FROM contacts WHERE contact_name = ?";
         System.out.println(sqlStatement);
 
         try {
-            //create statement object
             PreparedStatement pst = ConnectDB.makeConnection().prepareStatement(sqlStatement);
             pst.setString(1, contact_name);
             System.out.println(contact_name);
-
-            //execute statement and create resultset object
-            ResultSet result = pst.executeQuery();
-
-            //get all records from resultset obj
-            while (result.next()) {
-                contactID = result.getInt("contact_id");
+            ResultSet set = pst.executeQuery();
+            while (set.next()) {
+                contactID = set.getInt("contact_id");
             }
             System.out.println(contactID);
         } catch (SQLException throwables){
@@ -432,83 +431,75 @@ public class ReportsScreenController implements Initializable {
     }
 
     /** This method sets current contact's schedule into table. */
-    private void setReportsScheduleTable() {
+    private void setContactAppointments() {
         System.out.println("**** Begin Report Schedule Table ****");
-        PreparedStatement ps;
         try {
-            ps = ConnectDB.makeConnection().prepareStatement(
-                    "SELECT appointments.appointment_Id, appointments.title,  appointments.type, appointments.description, appointments.contact_id, " +
-                            "appointments.start, appointments.end, customers.customer_Id FROM appointments, customers " +
-                            "WHERE appointments.customer_Id = customers.customer_Id AND appointments.contact_id = ? ORDER BY start");
+            PreparedStatement sql;
+            sql = ConnectDB.makeConnection().prepareStatement("SELECT appointments.appointment_Id, " +
+                    "appointments.title,  appointments.type, appointments.description, appointments.contact_id, " +
+                    "appointments.start, appointments.end, customers.customer_Id FROM appointments, customers " +
+                    "WHERE appointments.customer_Id = customers.customer_Id AND appointments.contact_id = ? ORDER BY start");
+            sql.setInt(1, getContactID(contactComboBox.getValue()));
+            ResultSet set = sql.executeQuery();
 
-            ps.setInt(1, getContactID(contactComboBox.getValue()));
-
-            System.out.println("PreparedStatement: " + ps);
-            ResultSet rs = ps.executeQuery();
+            System.out.println("PreparedStatement: " + sql);
             System.out.println("Report Schedule query worked");
             scheduleOL.clear();
-
-            while (rs.next()) {
-                int appointmentID = rs.getInt("appointment_Id");
-                System.out.println(appointmentID);
-                String description = rs.getString("description");
-                System.out.println(description);
-                int customerID = rs.getInt("customer_Id");
-                System.out.println(customerID);
-                int contactID = rs.getInt("contact_id");
-                System.out.println(contactID);
-
-                //get database start time stored as UTC
-                String universalStart = rs.getString("start").substring(0, 19);
+            while (set.next()) {
+                String universalStart = set.getString("start").substring(0, 19);
                 System.out.println(universalStart);
 
-                //get database end time stored as UTC
-                String universalEnd = rs.getString("end").substring(0, 19);
+                String universalEnd = set.getString("end").substring(0, 19);
                 System.out.println(universalEnd);
 
-                //convert database UTC to LocalDateTime
                 LocalDateTime universalDateStart = LocalDateTime.parse(universalStart, datetimeDTF);
                 LocalDateTime universalDateEnd = LocalDateTime.parse(universalEnd, datetimeDTF);
 
-                //convert times UTC zoneId to local zoneId
-                ZonedDateTime userTimeStart = universalDateStart.atZone(utcZoneID).withZoneSameInstant(localTime);
-                ZonedDateTime userTimeEnd = universalDateEnd.atZone(utcZoneID).withZoneSameInstant(localTime);
+                ZonedDateTime userTimeStart = universalDateStart.atZone(utcZoneID).withZoneSameInstant(userTime);
+                ZonedDateTime userTimeEnd = universalDateEnd.atZone(utcZoneID).withZoneSameInstant(userTime);
 
-                //convert ZonedDateTime to a string for insertion into AppointmentsTableView
                 String userDateStart = userTimeStart.format(datetimeDTF);
                 String userDateEnd = userTimeEnd.format(datetimeDTF);
 
-                //get title from appointment
-                String title = rs.getString("title");
+                int appointmentID = set.getInt("appointment_Id");
+                System.out.println(appointmentID);
+
+                String description = set.getString("description");
+                System.out.println(description);
+
+                int customerID = set.getInt("customer_Id");
+                System.out.println(customerID);
+
+                int contactID = set.getInt("contact_id");
+                System.out.println(contactID);
+
+                String title = set.getString("title");
                 System.out.println("Title: " + title);
 
-                //get type from appointment
-                String type = rs.getString("type");
+                String type = set.getString("type");
                 System.out.println("Type: " + type);
 
                 scheduleOL.add(new Appointment(appointmentID, customerID, title, description, type, userDateStart, userDateEnd));
                 System.out.println("Schedule add: " + scheduleOL);
             }
-
-            //filter appointments by week or month
-        } catch (SQLException sqe) {
+        } catch (SQLException sqle) {
             System.out.println("Report Schedule Table SQL error!");
             System.out.println("Schedule add: " + scheduleOL);
-            sqe.printStackTrace();
-        } catch (Exception e) {
+            sqle.printStackTrace();
+        } catch (Exception error) {
             System.out.println("Something other than SQL has caused an error!");
         }
         System.out.println("**** End Report Schedule Table ****");
     }
 
    /** This method handles the contact combobox.
-    * @param actionEvent When actioned it calls the setReportsScheduleTable method. */
+    * @param actionEvent When actioned it calls the setContactAppointments method. */
     @FXML
     public void contactComboBoxHandler(MouseEvent actionEvent) {
         contactComboBox.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     try {
-                        setReportsScheduleTable();
+                        setContactAppointments();
                         System.out.println(contactComboBox.getValue());
                     } catch (Exception ex) {
                         System.out.println("Customer Listener had an error!");
@@ -552,33 +543,26 @@ public class ReportsScreenController implements Initializable {
         System.out.println("***** Begin Update Customer Table *****");
         listOfCusts.clear();
 
-        //Write SQL statement (columns from two tables)
         String sqlStatement = "SELECT customers.*, first_level_divisions.division FROM customers, first_level_divisions, countries WHERE customers.Division_ID " +
                 "= first_level_divisions.division_id AND first_level_divisions.Country_ID = countries.country_ID AND " +
                 "countries.country = ?";
-
         try {
-            //create statement object
             PreparedStatement pst = ConnectDB.makeConnection().prepareStatement(sqlStatement);
             pst.setString(1, countryName);
-
-            //execute statement and create resultset object
-            ResultSet result = pst.executeQuery();
-
-            //get all records from resultset object
-            while (result.next()) {
-                Customer cust = new Customer();
-                cust.setCustomerID(result.getInt("customer_Id"));
-                cust.setCustomerName(result.getString("customer_Name"));
-                cust.setCustomerAddress(result.getString("address"));
-                cust.setCustomerPhone(result.getString("phone"));
-                cust.setCustomerPostalCode(result.getString("postal_code"));
-                cust.setDivision(result.getString("Division"));
-                listOfCusts.addAll(cust);
+            ResultSet set = pst.executeQuery();
+            while (set.next()) {
+                Customer current = new Customer();
+                current.setCustomerID(set.getInt("customer_Id"));
+                current.setCustomerName(set.getString("customer_Name"));
+                current.setCustomerAddress(set.getString("address"));
+                current.setCustomerPhone(set.getString("phone"));
+                current.setCustomerPostalCode(set.getString("postal_code"));
+                current.setDivision(set.getString("Division"));
+                listOfCusts.addAll(current);
             }
             customerCountryTable.setItems(listOfCusts);
             pst.close();
-            result.close();
+            set.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -587,24 +571,17 @@ public class ReportsScreenController implements Initializable {
 
     /** This method populates countryComboBox with all available countries. */
     public void fillCountryComboBox() throws SQLException, Exception {
-        //create statement object
         Statement stmt = ConnectDB.makeConnection().createStatement();
-
-        //Write SQL statement (columns from two tables)
         String sqlStatement = "SELECT country FROM countries";
-
-        //execute statement and create resultset object
-        ResultSet result = stmt.executeQuery(sqlStatement);
-
-        //get all records from resultset obj
-        while (result.next()) {
-            Customer cust = new Customer();
-            cust.setCustomerCountry(result.getString("country"));
-            countryOptions.add(cust.getCustomerCountry());
+        ResultSet set = stmt.executeQuery(sqlStatement);
+        while (set.next()) {
+            Customer current = new Customer();
+            current.setCustomerCountry(set.getString("country"));
+            countryOptions.add(current.getCustomerCountry());
             countryComboBox.setItems(countryOptions);
         }
         stmt.close();
-        result.close();
+        set.close();
     }
 }
 
