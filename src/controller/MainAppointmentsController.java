@@ -5,6 +5,7 @@ import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -53,43 +54,41 @@ public class  MainAppointmentsController implements Initializable {
     @FXML
     public RadioButton allSelector;
     @FXML
-    private Button newAppButton;
+    public Button newAppButton;
     @FXML
-    private Button updateButton;
+    public Button buttonToUpdate;
     @FXML
-    private TableView<Appointment> tableOfAppointments;
+    public TableView<Appointment> tableOfAppointments;
     @FXML
-    private TableColumn<Appointment, String> colStartTime;
+    public TableColumn<Appointment, String> colStartTime;
     @FXML
-    private TableColumn<Appointment, String> colEndTime;
+    public TableColumn<Appointment, String> colEndTime;
     @FXML
-    private TableColumn<Appointment, String> colTitle;
+    public TableColumn<Appointment, String> colTitle;
     @FXML
-    private TableColumn<Appointment, String> colType;
+    public TableColumn<Appointment, String> colType;
     @FXML
-    private TableColumn<Appointment, String> colCustomer;
+    public TableColumn<Appointment, String> colCustomer;
     @FXML
-    private TableColumn<Appointment, String> colContact;
+    public TableColumn<Appointment, String> colContact;
     @FXML
-    private RadioButton weekSelector;
+    public RadioButton weekSelector;
     @FXML
-    private RadioButton monthSelector;
+    public RadioButton monthSelector;
 
-    private boolean isWeekly;
-    private boolean isMonthly;
-    private static Appointment updateAppointment;
-    public static int addUpdateFilter; //used to identify Add/Update label on AppointmentAddController
-
+    //Declaring variables
     Parent parent;
     Stage setup;
-
+    boolean shortSort; //Show appointments for this week only
+    boolean monthSort; //Show appointments for this month only
+    static Appointment reviseApp;
+    static int addUpdateFilter; //Changes label between "update" or "add"
     ObservableList<Appointment> appointmentsOL = FXCollections.observableArrayList();
     ResourceBundle rb = ResourceBundle.getBundle("properties.login", Locale.getDefault());
 
-    //private User currentUser;
-    private final DateTimeFormatter datetimeDTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private final ZoneId localTime = ZoneId.systemDefault();
-    private final ZoneId utcZoneID = ZoneId.of("UTC");
+    DateTimeFormatter datetimeDTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    ZoneId localTime = ZoneId.systemDefault();
+    ZoneId utcZoneID = ZoneId.of("UTC");
 
     /** Initializes the controller class.
      * @param url The URL parameter.
@@ -97,7 +96,17 @@ public class  MainAppointmentsController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        //Populate CustomerTable with values
+        ToggleGroup radioButtonToggleGroup = new ToggleGroup();
+        weekSelector.setToggleGroup(radioButtonToggleGroup);
+        monthSelector.setToggleGroup(radioButtonToggleGroup);
+        allSelector.setToggleGroup(radioButtonToggleGroup);
+        weekSelector.setSelected(false);
+        monthSelector.setSelected(false);
+        allSelector.setSelected(true);
+        shortSort = false;
+        monthSort = false;
+
+        //Set column data for headers
         colStartTime.setCellValueFactory(new PropertyValueFactory<>("Start"));
         colEndTime.setCellValueFactory(new PropertyValueFactory<>("End"));
         colTitle.setCellValueFactory(new PropertyValueFactory<>("Title"));
@@ -108,98 +117,78 @@ public class  MainAppointmentsController implements Initializable {
         colDescription.setCellValueFactory(new PropertyValueFactory<>("Description"));
         colLocation.setCellValueFactory(new PropertyValueFactory<>("Location"));
         colUserID.setCellValueFactory(new PropertyValueFactory<>("UserID"));
-
-        //sets togglegroup
-        ToggleGroup radioButtonToggleGroup = new ToggleGroup();
-        weekSelector.setToggleGroup(radioButtonToggleGroup);
-        monthSelector.setToggleGroup(radioButtonToggleGroup);
-        allSelector.setToggleGroup(radioButtonToggleGroup);
-        weekSelector.setSelected(false);
-        monthSelector.setSelected(false);
-        allSelector.setSelected(true);
-
-        isWeekly = false;
-        isMonthly = false;
-
         try {
-            setAppointmentsTable();
+            fillAppListView();
         } catch (SQLException ex) {
             System.out.println("SQL error when 'setAppointmentTable' was called.");
         }
     }
 
-    /** This method handles returns updateAppointment object that was selected for update.
-     * @return Returns updateAppointment variable.
-     * */
-    public static Appointment getUpdateAppointment() {
-        return updateAppointment;
-    }
-
-    /** This method populates table view with appointments and applies filter. */
-    public void setAppointmentsTable() throws SQLException {
+    /** This method fills the GUI view with the list of appointments. */
+    public void fillAppListView() throws SQLException {
         System.out.println("**** Start Set Appointment Table ****");
-        PreparedStatement ps;
+        Statement stmt = ConnectDB.makeConnection().createStatement();
+        String sqlStatement = "SELECT appointments.appointment_Id, appointments.customer_Id, appointments.user_Id, " +
+                "appointments.title, appointments.description, appointments.location, appointments.contact_id, " +
+                "appointments.type, appointments.start, appointments.end, contacts.contact_name, customers.customer_Id, " +
+                "customers.customer_Name FROM appointments, customers, contacts WHERE appointments.customer_Id = " +
+                "customers.customer_Id AND appointments.Contact_ID = contacts.Contact_ID ORDER BY start";
         try {
-            ps = ConnectDB.makeConnection().prepareStatement("SELECT appointments.appointment_Id, appointments.customer_Id, " +
-                    "appointments.user_Id, appointments.title, appointments.description, appointments.location, appointments.contact_id, " +
-                    "appointments.type, appointments.start, appointments.end, contacts.contact_name, customers.customer_Id, " +
-                    "customers.customer_Name FROM appointments, customers, contacts WHERE appointments.customer_Id = customers.customer_Id AND appointments.Contact_ID = contacts.Contact_ID " +
-                    "ORDER BY start");
-
-            System.out.println("PreparedStament: " + ps);
-            ResultSet rs = ps.executeQuery();
+            ResultSet set = stmt.executeQuery(sqlStatement);
+            System.out.println("PreparedStatement: " + sqlStatement);
             System.out.println("Appointment Table query worked");
             appointmentsOL.clear();
+            while (set.next()) {
+                //Obtain times for appointments
+                String universalStart =set.getString("start").substring(0, 19);
+                System.out.println("universalStart: " + universalStart);
+                String universalEnd =set.getString("end").substring(0, 19);
+                System.out.println("universalEnd: " + universalEnd);
+                LocalDateTime universalDateStart = LocalDateTime.parse(universalStart, datetimeDTF);
+                System.out.println("universalDateStart: " + universalDateStart);
+                LocalDateTime universalDateEnd = LocalDateTime.parse(universalEnd, datetimeDTF);
+                System.out.println("universalDateEnd: " + universalDateEnd);
+                ZonedDateTime userTimeStart = universalDateStart.atZone(utcZoneID).withZoneSameInstant(localTime);
+                System.out.println("userTimeStart: " + userTimeStart);
+                ZonedDateTime userTimeEnd = universalDateEnd.atZone(utcZoneID).withZoneSameInstant(localTime);
+                System.out.println("userTimeEnd: " + userTimeEnd);
+                String userDateStart = userTimeStart.format(datetimeDTF);
+                System.out.println("userDateStart: " + userDateStart);
+                String userDateEnd = userTimeEnd.format(datetimeDTF);
+                System.out.println("userDateEnd: " + userDateEnd);
 
-            while (rs.next()) {
-                //assigns variables with data from db for insertion into appointments observablelist
-                int appointmentID = rs.getInt("appointment_Id");
-                int customerID = rs.getInt("customer_Id");
-                int userID = rs.getInt("user_Id");
-                String description = rs.getString("description");
-                String location = rs.getString("location");
-                String contact = rs.getString("contact_id");
+                //Obtain appointment data from database and assign to the below vars
+                String contactNum =set.getString("contact_id");
+                System.out.println("contact_id: " + contactNum);
+                String description =set.getString("description");
+                System.out.println("description: " + description);
+                String officePlace =set.getString("location");
+                System.out.println("location: " + officePlace);
+                int userNum =set.getInt("user_Id");
+                System.out.println("userID: " + userNum);
+                int appNum =set.getInt("appointment_Id");
+                System.out.println("appointmentID: " + appNum);
+                int custNum =set.getInt("customer_Id");
+                System.out.println("customerID: " + custNum);
+                String contactName =set.getString("contact_name");
+                System.out.println("contactName: " + contactName);
+                String appType =set.getString("type");
+                System.out.println("appType: " + appType);
+                String title =set.getString("title");
+                System.out.println("title: " + title);
+                Customer current = new Customer(set.getInt("customer_Id"),set.getString("customer_Name"));
+                String customerName = current.getCustomerName();
+                System.out.println("Customer Name: " + customerName);
 
-                //get database start time stored as UTC
-                String startUTC = rs.getString("start").substring(0, 19);
-
-                //get database end time stored as UTC
-                String endUTC = rs.getString("end").substring(0, 19);
-
-                //convert database UTC to LocalDateTime
-                LocalDateTime utcStartDT = LocalDateTime.parse(startUTC, datetimeDTF);
-                LocalDateTime utcEndDT = LocalDateTime.parse(endUTC, datetimeDTF);
-
-                //convert times UTC zoneId to local zoneId
-                ZonedDateTime localZoneStart = utcStartDT.atZone(utcZoneID).withZoneSameInstant(localTime);
-                ZonedDateTime localZoneEnd = utcEndDT.atZone(utcZoneID).withZoneSameInstant(localTime);
-
-                //convert ZonedDateTime to a string for insertion into AppointmentsTableView
-                String localStartDT = localZoneStart.format(datetimeDTF);
-                String localEndDT = localZoneEnd.format(datetimeDTF);
-
-                //get title from appointment
-                String title = rs.getString("title");
-
-                //get type from appointment
-                String type = rs.getString("type");
-
-                //put Customer data into Customer object
-                Customer customer = new Customer(rs.getInt("customer_Id"), rs.getString("customer_Name"));
-                String customerName = customer.getCustomerName();
-
-                //System.out.println("Customer Name: " + customerName);
-                String user = rs.getString("contact_name");
-
-                //insert appointments into observablelist for tableOfAppointments if userName = createdBy
-                appointmentsOL.add(new Appointment(appointmentID, customerID, userID, title, description, location, contact, type, localStartDT, localEndDT, customerName, user));
+                //load appointment data into the list of appointments for the tableview
+                appointmentsOL.add(new Appointment(appNum, custNum, userNum, title, description, officePlace,
+                        contactNum, appType, userDateStart, userDateEnd, customerName, contactName));
             }
-
-            //filter appointments by week or month
-            if (isWeekly) {
-                filterAppointmentsByWeek(appointmentsOL);
-            } else if (isMonthly){
-                filterAppointmentsByMonth(appointmentsOL);
+            //This portion of code sorts the appointment list by week, month, or all at once
+            if (shortSort) {
+                weekSorter(appointmentsOL);
+            } else if (monthSort){
+                monthSorter(appointmentsOL);
             } else {
                 tableOfAppointments.setItems(appointmentsOL);
             }
@@ -215,7 +204,7 @@ public class  MainAppointmentsController implements Initializable {
      * @param event When actioned it loads the add appointment fxml file.
      * */
     @FXML
-    private void newAppButtonHandler(ActionEvent event) throws IOException {
+    public void newAppButtonHandler(ActionEvent event) throws IOException {
         addUpdateFilter = 1;
         parent = FXMLLoader.load(getClass().getResource("/view/AddAppointment.fxml"));
         setup = (Stage) newAppButton.getScene().getWindow();
@@ -225,71 +214,88 @@ public class  MainAppointmentsController implements Initializable {
     }
 
     /** This method handles the update appointment button.
+     * First checks if an appointment is selected. If not, it alerts as such.
      * @param event When actioned it loads the add appointment fxml file with the pretense of updating a current customer.
      * */
     @FXML
-    private void updateButtonHandler(ActionEvent event) throws IOException {
-        //Check that a part has been selected
+    public void buttonToUpdateHandler(ActionEvent event) throws IOException {
         if (tableOfAppointments.getSelectionModel().getSelectedItem() != null) {
-            updateAppointment = tableOfAppointments.getSelectionModel().getSelectedItem();
-            System.out.println("AppointmentID: " + updateAppointment.getAppointmentID());
-            int updateAppointmentIndex = appointmentsOL.indexOf(updateAppointment);
+            reviseApp = tableOfAppointments.getSelectionModel().getSelectedItem();
             addUpdateFilter = 2;
 
             //get reference to the button's stage
             parent = FXMLLoader.load(getClass().getResource("/view/AddAppointment.fxml"));
-            setup = (Stage) updateButton.getScene().getWindow();
+            setup = (Stage) buttonToUpdate.getScene().getWindow();
             Scene scene = new Scene(parent);
             setup.setScene(scene);
             setup.show();
         } else {
+            //Alert that no appointment is selected
+            Alert signal = new Alert(Alert.AlertType.CONFIRMATION);
+            signal.setTitle(rb.getString("invalidappointmentalert"));
+            signal.setHeaderText(rb.getString("nopppointment"));
+            signal.setContentText(rb.getString("selectappointment"));
+            Optional<ButtonType> result = signal.showAndWait();
             System.out.println("No appointment has been selected to modify.");
         }
     }
 
-    /** This method handles deletes a selected appointment.
+    /** This method handles returns reviseApp object that was selected for update.
+     * @return Returns reviseApp variable.
+     * */
+    public static Appointment getReviseApp() {
+        return reviseApp;
+    }
+
+    /** This method deletes a selected appointment from the database.
      * @param appointment The selected appointment from the appointments table.
      * */
     @FXML
-    private void deleteAppointment(Appointment appointment) throws Exception {
-        Appointment appt = appointment;
+    public void deleteAppointment(Appointment appointment) throws Exception {
         try {
-            PreparedStatement ps = ConnectDB.makeConnection().prepareStatement("DELETE appointments.* FROM appointments WHERE appointments.appointment_Id = ? ");
-            System.out.println("Delete appointmentID " + appt.getAppointmentID());
-            ps.setInt(1, appt.getAppointmentID());
-            int result = ps.executeUpdate();
+            PreparedStatement sql = ConnectDB.makeConnection().prepareStatement("DELETE appointments.* FROM " +
+                    "appointments WHERE appointments.appointment_Id = ? ");
+            System.out.println("Delete appointmentID " + appointment.getAppointmentID());
+            sql.setInt(1, appointment.getAppointmentID());
+            int set = sql.executeUpdate();
         } catch (SQLException e) {
             System.out.println("SQL statement contains an error!");
         }
-        setAppointmentsTable();
+        fillAppListView();
     }
 
     /** This method handles the delete button.
      * @param event When clicked it calls the deleteAppointment method.
      * */
     @FXML
-    private void deleteHandler(ActionEvent event) throws Exception {
+    public void deleteHandler(ActionEvent event) throws Exception {
         if (tableOfAppointments.getSelectionModel().getSelectedItem() != null) {
-
-            Appointment appt = tableOfAppointments.getSelectionModel().getSelectedItem();
-            int appointmentID = appt.getAppointmentID();
+            Appointment current = tableOfAppointments.getSelectionModel().getSelectedItem();
+            int appointmentID = current.getAppointmentID();
             System.out.println("AppointmentID : " + appointmentID);
 
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle(rb.getString("confirmationrequired"));
-            alert.setHeaderText(rb.getString("confirmationdelete"));
-            alert.setContentText(rb.getString("confirmdeleteappointment") + appt.getAppointmentID() + "?\nAppointment type: " + appt.getType());
-            Optional<ButtonType> result = alert.showAndWait();
+            //Alert asking to confirm deletion
+            Alert signal = new Alert(Alert.AlertType.CONFIRMATION);
+            signal.setTitle(rb.getString("confirmationrequired"));
+            signal.setHeaderText(rb.getString("confirmationdelete"));
+            signal.setContentText(rb.getString("confirmdeleteappointment") + current.getAppointmentID() + "?\nAppointment type: " + current.getType());
+            Optional<ButtonType> result = signal.showAndWait();
 
             if (result.get() == ButtonType.OK) {
                 System.out.println("Deleting appointment...");
-                deleteAppointment(appt);
-                System.out.println("AppointmentID " + appt.getAppointmentID() + " has been deleted!");
-                setAppointmentsTable();
+                deleteAppointment(current);
+                System.out.println("AppointmentID " + current.getAppointmentID() + " has been deleted!");
+                fillAppListView();
             } else {
                 System.out.println("DELETE was canceled.");
             }
         } else {
+            //Alert that no appointment is selected
+            Alert signal = new Alert(Alert.AlertType.CONFIRMATION);
+            signal.setTitle(rb.getString("invalidappointmentalert"));
+            signal.setHeaderText(rb.getString("nopppointment"));
+            signal.setContentText(rb.getString("selectappointment"));
+            Optional<ButtonType> result = signal.showAndWait();
             System.out.println("No appointment was selected to delete!");
         }
     }
@@ -298,71 +304,65 @@ public class  MainAppointmentsController implements Initializable {
      * @param event When selected it limits appointments in the table to those within this week.
      * */
     @FXML
-    private void weekSelectorHandler(ActionEvent event) throws SQLException, Exception {
-        isWeekly = true;
-        isMonthly = false;
-        setAppointmentsTable();
+    public void weekSelectorHandler(ActionEvent event) throws SQLException, Exception {
+        shortSort = true;
+        monthSort = false;
+        fillAppListView();
     }
 
     /** This method handles the month labeled toggle button.
      * @param event When selected it limits appointments in the table to those within this month.
      * */
     @FXML
-    private void monthSelectorHandler(ActionEvent event) throws SQLException, Exception {
-        isWeekly = false;
-        isMonthly = true;
-        setAppointmentsTable();
+    public void monthSelectorHandler(ActionEvent event) throws Exception {
+        shortSort = false;
+        monthSort = true;
+        fillAppListView();
     }
 
     /** This method creates an observable list with appointments for this month.
      * @param appointmentsOL The observable list with all appointments.
      * <p>
-     * The lambda expression in this method filters the appointments observable list. The filter selects all appointments
+     * The lambda expression on line 330 filters the appointments observable list. The filter selects all appointments
      * in the current calendar month. It is justified because the code is more efficient, and therefore the program is more efficient.
      * </p>
      * */
-    public void filterAppointmentsByMonth(ObservableList appointmentsOL) throws SQLException {
-        //filter appointments for month
-        LocalDate now = LocalDate.now();
-
-        //lambda expression used to efficiently filter appointments by month
-        FilteredList<Appointment> filteredData = new FilteredList<>(appointmentsOL);
-        filteredData.setPredicate(row -> {
-            LocalDate rowDate = LocalDate.parse(row.getStart(), datetimeDTF);
-            return rowDate.getMonth().equals(now.getMonth());
+    public void monthSorter(ObservableList appointmentsOL) throws SQLException {
+        LocalDate current = LocalDate.now();
+        FilteredList<Appointment> sortedList = new FilteredList<>(appointmentsOL);
+        sortedList.setPredicate(row -> {
+            LocalDate selectedTime = LocalDate.parse(row.getStart(), datetimeDTF);
+            return selectedTime.getMonth().equals(current.getMonth());
         });
-        tableOfAppointments.setItems(filteredData);
+        tableOfAppointments.setItems(sortedList);
     }
 
     /** This method creates an observablelist with appointments for this week.
      * @param appointmentsOL The observable list with all appointments.
      * <p>
-     * The lambda expression in this method filters the appointments observable list. The filter selects all appointments
+     * The lambda expression on line 349 filters the appointments observable list. The filter selects all appointments
      * in a rolling week starting the day before the current day. It is justified because the code is more efficient,
      * and therefore the program is more efficient.
      * </p>
      * */
-    public void filterAppointmentsByWeek(ObservableList appointmentsOL) {
-        //filter appointments for week
-        LocalDate now = LocalDate.now();
-        LocalDate nowPlus1Week = now.plusWeeks(1);
-
-        //lambda expression used to efficiently filter appointments by week
-        FilteredList<Appointment> filteredData = new FilteredList<>(appointmentsOL);
-        filteredData.setPredicate(row -> {
-            LocalDate rowDate = LocalDate.parse(row.getStart(), datetimeDTF);
-            return rowDate.isAfter(now.minusDays(1)) && rowDate.isBefore(nowPlus1Week);
+    public void weekSorter(ObservableList appointmentsOL) {
+        LocalDate current = LocalDate.now();
+        LocalDate week = current.plusWeeks(1);
+        FilteredList<Appointment> sortedList = new FilteredList<>(appointmentsOL);
+        sortedList.setPredicate(row -> {
+            LocalDate selectedTime = LocalDate.parse(row.getStart(), datetimeDTF);
+            return selectedTime.isAfter(current.minusDays(1)) && selectedTime.isBefore(week);
         });
-        tableOfAppointments.setItems(filteredData);
+        tableOfAppointments.setItems(sortedList);
     }
 
     /** This method handles the back button.
      * @param event When actioned loads the main screen FXML.
      * */
     @FXML
-    private void AppointmentsBackButtonHandler(ActionEvent event) throws IOException {
+    public void buttonToGoBackHandler(ActionEvent event) throws IOException {
         parent = FXMLLoader.load(getClass().getResource("/view/MainScreen.fxml"));
-        setup = (Stage) updateButton.getScene().getWindow();
+        setup = (Stage) buttonToUpdate.getScene().getWindow();
         Scene scene = new Scene(parent);
         setup.setScene(scene);
         setup.show();
@@ -372,9 +372,9 @@ public class  MainAppointmentsController implements Initializable {
      * @param actionEvent When selected it loads all appointments into the appointments table.
      * */
     public void allSelectorHandler(ActionEvent actionEvent) throws SQLException {
-        isWeekly = false;
-        isMonthly = false;
-        setAppointmentsTable();
+        shortSort = false;
+        monthSort = false;
+        fillAppListView();
     }
 }
 

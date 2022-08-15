@@ -78,7 +78,8 @@ public class LoginController implements Initializable {
         }
     }
 
-    /** This method filters the reminder list and alerts if appointment is within 15 minutes.
+    /** This method finds meetings starting within 15 minutes and alerts the user. If there are no appointments within
+     * 15 minutes there is an alert stating no upcoming meetings in 15 minutes.
      * <p>
      * The lambda on line 94 will locate appointments starting within a quarter of an hour from now. It is justified
      * because the code is more efficient, and therefore the program is more efficient.
@@ -104,14 +105,14 @@ public class LoginController implements Initializable {
             signal.setContentText(rb.getString("clickokay"));
             signal.showAndWait();
         } else {
-            String type = sortedList.get(0).getDescription();
             String customer = sortedList.get(0).getCustomerName();
             String start = sortedList.get(0).getStart().substring(0, 16);
             Alert signal = new Alert(Alert.AlertType.INFORMATION);
             signal.setTitle(rb.getString("upcomingappointment"));
             signal.setHeaderText(rb.getString("appointmentreminder"));
-            signal.setContentText(rb.getString("appointmentwith1") + customer
-                    + rb.getString("appointmentwith2") + start + ".");
+            signal.setContentText(rb.getString("appointmentwith1") + " " + customer + " "
+                    + rb.getString("appointmentwith2") + " " + start + ".");
+            System.out.println("start: " + start);
             signal.showAndWait();
         }
         System.out.println("**** End upcomingAlertSignal ****");
@@ -247,8 +248,8 @@ public class LoginController implements Initializable {
     public int getCreatorNumber(String username) throws SQLException {
         int creatorNumber = -1;
 
-        PreparedStatement sql = ConnectDB.makeConnection().prepareStatement("\"SELECT user_ID FROM users WHERE " +
-                        "user_Name =" + username + "'");
+        PreparedStatement sql = ConnectDB.makeConnection().prepareStatement("SELECT user_ID FROM users WHERE " +
+                        "user_Name = '" + username + "'");
         ResultSet set = sql.executeQuery();
         while (set.next()) {
             creatorNumber = set.getInt("user_Id");

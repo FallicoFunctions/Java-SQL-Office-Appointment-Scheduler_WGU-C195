@@ -148,7 +148,7 @@ public class AddAppointmentController implements Initializable {
         });
         //This code checks to see if we are updating a current customer or creating a new one
         if (MainAppointmentsController.addUpdateFilter == 2) {
-            chosenMeeting = MainAppointmentsController.getUpdateAppointment();
+            chosenMeeting = MainAppointmentsController.getReviseApp();
             chosenCust.setCustomerID(chosenMeeting.getCustomerID());
             System.out.println("chosenCustID: " + chosenCust.getCustomerID());
             custListDisplay.getSelectionModel().select(chosenCust);

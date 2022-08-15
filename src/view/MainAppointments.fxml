@@ -13,7 +13,7 @@
         </Label>
         <Button fx:id="newAppButton" layoutX="641.0" layoutY="600.0" mnemonicParsing="false" onAction="#newAppButtonHandler" prefHeight="27.0" prefWidth="185.0" text="Add New Appointment" />
         <Button layoutX="443.0" layoutY="600.0" mnemonicParsing="false" onAction="#deleteHandler" prefHeight="27.0" prefWidth="185.0" text="Delete Selected Appointment" />
-        <Button fx:id="updateButton" layoutX="443.0" layoutY="644.0" mnemonicParsing="false" onAction="#updateButtonHandler" prefHeight="27.0" prefWidth="185.0" text="Update Selected Appointment" />
+        <Button fx:id="buttonToUpdate" layoutX="443.0" layoutY="644.0" mnemonicParsing="false" onAction="#buttonToUpdateHandler" prefHeight="27.0" prefWidth="185.0" text="Update Selected Appointment" />
         <TableView fx:id="tableOfAppointments" layoutX="90.0" layoutY="120.0" prefHeight="400.0" prefWidth="1100.0">
             <columns>
                 <TableColumn fx:id="colStartTime" prefWidth="115.0" text="Start" />
@@ -38,7 +38,7 @@
                 <Font name="Times New Roman" size="18.0" />
             </font>
         </RadioButton>
-        <Button layoutX="641.0" layoutY="644.0" mnemonicParsing="false" onAction="#AppointmentsBackButtonHandler" prefHeight="27.0" prefWidth="185.0" text="Go Back" />
+        <Button layoutX="641.0" layoutY="644.0" mnemonicParsing="false" onAction="#buttonToGoBackHandler" prefHeight="27.0" prefWidth="185.0" text="Go Back" />
       <RadioButton fx:id="allSelector" layoutX="247.0" layoutY="69.0" mnemonicParsing="false" onAction="#allSelectorHandler" text="All Appointments" textFill="WHITE">
          <font>
             <Font name="Times New Roman" size="18.0" />
