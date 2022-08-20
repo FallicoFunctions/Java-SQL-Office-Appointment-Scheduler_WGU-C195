@@ -61,7 +61,7 @@
                         <TextField fx:id="custNameEntryBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <TextField fx:id="custAddressEntryBox" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <ComboBox fx:id="comboBoxCounty" onAction="#comboBoxCountyHandler" prefHeight="26.0" prefWidth="252.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                        <ComboBox fx:id="comboBoxFirstLevel" onAction="#comboBoxFirstLevelHandler" prefHeight="26.0" prefWidth="252.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <ComboBox fx:id="comboBoxFirstLevel" prefHeight="26.0" prefWidth="252.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                         <TextField fx:id="zipCodeEntryBox" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                         <TextField fx:id="phoneEntryBox" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                         <Button fx:id="buttonToSave" minWidth="66.0" mnemonicParsing="false" onAction="#buttonToSaveHandler" prefHeight="26.0" prefWidth="111.0" text="Save Info" GridPane.rowIndex="7" />

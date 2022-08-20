@@ -166,21 +166,21 @@ public class CustomerScreenController implements Initializable {
      * */
     public void fillFirstLevelBox(String countryName) {
         System.out.println(countryName);
-        //comboBoxFirstLevel.getItems().clear();
-        try {
-            PreparedStatement sql = ConnectDB.makeConnection().prepareStatement("SELECT first_level_divisions.* FROM first_level_divisions, countries WHERE first_level_divisions.Country_ID = countries.country_ID AND countries.country = ?");
-            sql.setString(1, countryName);
-            ResultSet set = sql.executeQuery();
-            while (set.next()) {
-                Customer current = new Customer();
-                current.setDivision(set.getString("division"));
-                firstLevelOptions.add(current.getDivision());
+        firstLevelOptions.clear();
+        if (countryName != null) {
+            try {
+                PreparedStatement sql = ConnectDB.makeConnection().prepareStatement("SELECT first_level_divisions.* FROM first_level_divisions, countries WHERE first_level_divisions.Country_ID = countries.country_ID AND countries.country = ?");
+                sql.setString(1, countryName);
+                ResultSet set = sql.executeQuery();
+                while (set.next()) {
+                    firstLevelOptions.add(set.getString("division"));
+                }
                 comboBoxFirstLevel.setItems(firstLevelOptions);
+                sql.close();
+                set.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
             }
-            sql.close();
-            set.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
         }
     }
 
@@ -211,7 +211,7 @@ public class CustomerScreenController implements Initializable {
         comboBoxCounty.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     try {
-                        fillFirstLevelBox(comboBoxCounty.getValue());
+                        fillFirstLevelBox(newValue);
                     } catch (Exception ex) {
                         System.out.println("Customer Listener had an error!");
                         ex.printStackTrace();
@@ -437,6 +437,7 @@ public class CustomerScreenController implements Initializable {
                 custNameEntryBox.setText(set.getString("customer_Name"));
                 custAddressEntryBox.setText(set.getString("address"));
                 comboBoxCounty.setValue(set.getString("country"));
+                fillFirstLevelBox(comboBoxCounty.getValue());
                 comboBoxFirstLevel.setValue(set.getString("division"));
                 zipCodeEntryBox.setText(set.getString("Postal_Code"));
                 phoneEntryBox.setText(set.getString("phone"));
@@ -545,7 +546,6 @@ public class CustomerScreenController implements Initializable {
                     });
         } else {
 
-            /*
             //Alert signal
             Alert signal = new Alert(Alert.AlertType.ERROR);
             signal.setTitle(rb.getString("nocountry"));
@@ -553,6 +553,6 @@ public class CustomerScreenController implements Initializable {
             signal.setContentText(rb.getString("clickokay"));
             Optional<ButtonType> set = signal.showAndWait();
 
-        } */
+        }*/
     }
 }
