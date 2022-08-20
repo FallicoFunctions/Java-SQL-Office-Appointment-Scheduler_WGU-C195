@@ -530,29 +530,4 @@ public class CustomerScreenController implements Initializable {
         setup.setScene(scene);
         setup.show();
     }
-
-    @FXML
-    public void comboBoxFirstLevelHandler(ActionEvent actionEvent) {
-        /*
-        if(comboBoxCounty.getValue() != null) {
-            comboBoxFirstLevel.getSelectionModel().selectedItemProperty().addListener(
-                    (observable, oldValue, newValue) -> {
-                        try {
-                            fillFirstLevelBox(comboBoxCounty.getValue());
-                        } catch (Exception ex) {
-                            System.out.println("Customer Listener had an error!");
-                            ex.printStackTrace();
-                        }
-                    });
-        } else {
-
-            //Alert signal
-            Alert signal = new Alert(Alert.AlertType.ERROR);
-            signal.setTitle(rb.getString("nocountry"));
-            signal.setHeaderText(rb.getString("countryerror"));
-            signal.setContentText(rb.getString("clickokay"));
-            Optional<ButtonType> set = signal.showAndWait();
-
-        }*/
-    }
 }
