@@ -100,12 +100,12 @@ public class AddAppointmentController implements Initializable {
      * @param url The URL parameter.
      * @param rb The ResourceBundle parameter.
      * <p>
-     * There is a lambda listener expression on line 128. It is justified because it listens for the mouse click in the
+     * There is a lambda listener expression on line 130. It is justified because it listens for the mouse click in the
      * customer table. Then it populates the add appointment form with the selected customer's info. It is more efficient
      * to use a lambda for this task.
      * </p>
      * <p>
-     * There is a lambda expression on line 135. It is justified because it disables Saturdays and Sundays from being 
+     * There is a lambda expression on line 137. It is justified because it disables Saturdays and Sundays from being
      * selected in the calendar selector. It is more efficient to use a lambda for this task.
      * </p>
      * */
@@ -188,6 +188,7 @@ public class AddAppointmentController implements Initializable {
         System.out.println("localTimeStart: " + localTimeStart);
 
         //Inputs appointment data from the chosen meeting
+        appIDEntryBox.setText(Integer.toString(chosenMeeting.getAppointmentID()));
         custIDEntryBox.setText(chosenMeeting.getCustomerName());
         titleEntryBox.setText(chosenMeeting.getTitle());
         descriptionEntryBox.setText(chosenMeeting.getDescription());
@@ -548,10 +549,12 @@ public class AddAppointmentController implements Initializable {
         System.out.println("Type: " + comboBoxType.getSelectionModel().getSelectedItem());
         System.out.println("****************************************");
         try {
-            PreparedStatement sql = ConnectDB.makeConnection().prepareStatement("UPDATE appointments SET " +
-                    "customer_Id = ?, user_Id = ?, title = ?, description = ?, location = ?, contact_id = ?, " +
-                    "type = ?, WHERE appointment_Id = ?");
+            PreparedStatement sql = ConnectDB.makeConnection().prepareStatement("UPDATE appointments "
+                    + "SET customer_Id = ?, user_Id = ?, title = ?, description = ?, location = ?, contact_id = ?, " +
+                    "type = ?, start = ?, end = ?, last_Update = CURRENT_TIMESTAMP, last_Updated_By = ? "
+                    + "WHERE appointment_Id = ?");
             System.out.println("CustomerID before check CustomerTable: " + chosenCust.getCustomerID());
+            System.out.print(sql);
             if (chosenCust.getCustomerID() <= 0) {
                 chosenCust.setCustomerID(custListDisplay.getSelectionModel().getSelectedItem().getCustomerID());
             }

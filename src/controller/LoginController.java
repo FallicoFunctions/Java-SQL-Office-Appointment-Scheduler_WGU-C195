@@ -105,14 +105,17 @@ public class LoginController implements Initializable {
             signal.setContentText(rb.getString("clickokay"));
             signal.showAndWait();
         } else {
+            int appointmentId = sortedList.get(0).getAppointmentID();
             String customer = sortedList.get(0).getCustomerName();
-            String start = sortedList.get(0).getStart().substring(0, 16);
+            String dateStart = sortedList.get(0).getStart().substring(0, 10);
+            String timeStart = sortedList.get(0).getStart().substring(11, 16);
             Alert signal = new Alert(Alert.AlertType.INFORMATION);
             signal.setTitle(rb.getString("upcomingappointment"));
             signal.setHeaderText(rb.getString("appointmentreminder"));
-            signal.setContentText(rb.getString("appointmentwith1") + " " + customer + " "
-                    + rb.getString("appointmentwith2") + " " + start + ".");
-            System.out.println("start: " + start);
+            signal.setContentText("Appt ID: " + appointmentId + ". " + rb.getString("appointmentwith1") + " " +
+                    customer + ". " + rb.getString("appointmentwith2") + " " + timeStart + ", " + dateStart);
+            System.out.println("timeStart: " + timeStart);
+            System.out.println("dateStart: " + dateStart);
             signal.showAndWait();
         }
         System.out.println("**** End upcomingAlertSignal ****");
@@ -146,6 +149,7 @@ public class LoginController implements Initializable {
                 String creator = set.getString("created_By");
                 upcomingAppList.add(new Appointment(appNumber, userTimeStart.toString(), userTimeEnd.toString(), appTitle, description, custID, custName, creator));
 
+                //Print to console to check if working correctly
                 System.out.println("appNumber: " + appNumber);
                 System.out.println("userTimeStart: " + userTimeStart.toString());
                 System.out.println("userTimeEnd: " + userTimeEnd.toString());
